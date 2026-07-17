@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>Program de bord · Reisekosten</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2430; --line:#2b3648;
+    --amber:#e8a33d; --amber-dim:#8a6a2e; --green:#4ec06e; --red:#e5484d;
+    --txt:#e8edf2; --muted:#8b97a7; --white:#fff;
+    --mono:'SF Mono',ui-monospace,'Roboto Mono',Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);font-family:var(--sans)}
+  body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+  .wrap{max-width:820px;margin:0 auto;padding:14px 14px 90px}
+
+  /* top bar */
+  .top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+  .brand{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--amber);text-transform:uppercase}
+  .weeknav{display:flex;align-items:center;gap:6px}
+  .weeknav button{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:8px;width:34px;height:34px;font-size:16px}
+  .weeknav .lbl{font-family:var(--mono);font-size:12px;color:var(--muted);min-width:118px;text-align:center}
+
+  /* live card */
+  .live{background:linear-gradient(180deg,#12181f,#0f141a);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px;position:relative;overflow:hidden}
+  .live::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--muted)}
+  .live.on::before{background:var(--green)}
+  .live.warn::before{background:var(--amber)}
+  .live.stop::before{background:var(--red)}
+  .statusrow{display:flex;align-items:center;justify-content:space-between}
+  .status{font-family:var(--mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--muted)}
+  .live.on .dot{background:var(--green);box-shadow:0 0 10px var(--green)}
+  .live.warn .dot{background:var(--amber);box-shadow:0 0 10px var(--amber)}
+  .live.stop .dot{background:var(--red);box-shadow:0 0 10px var(--red);animation:pulse 1s infinite}
+  @keyframes pulse{50%{opacity:.4}}
+  .today{font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+  .bignum{font-family:var(--mono);font-size:54px;font-weight:600;line-height:1;margin:14px 0 2px;letter-spacing:.02em}
+  .bignum small{font-size:20px;color:var(--muted)}
+  .biglbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .stat .k{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+  .stat .v{font-family:var(--mono);font-size:22px;margin-top:3px}
+  .stat .v.red{color:var(--red)} .stat .v.green{color:var(--green)} .stat .v.amber{color:var(--amber)}
+
+  .resttoggle{display:flex;gap:8px;margin-top:14px}
+  .resttoggle button{flex:1;background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:10px;padding:11px;font-family:var(--mono);font-size:13px}
+  .resttoggle button.active{border-color:var(--amber);color:var(--amber);background:#211a0d}
+  .resttoggle button .sub{display:block;font-size:10px;color:var(--muted);margin-top:2px}
+
+  .reduced{display:flex;align-items:center;gap:10px;margin-top:12px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .pips{display:flex;gap:5px}
+  .pip{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--amber-dim)}
+  .pip.used{background:var(--amber);border-color:var(--amber)}
+  .pip.over{background:var(--red);border-color:var(--red)}
+
+  /* action buttons */
+  .actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
+  .act{border:none;border-radius:14px;padding:18px 8px;font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:.06em;color:#0d1117;display:flex;flex-direction:column;align-items:center;gap:6px}
+  .act .ico{font-size:22px}
+  .act.start{background:var(--green)} .act.route{background:var(--amber)} .act.stop{background:var(--red);color:#fff}
+  .act:active{transform:scale(.97)}
+  .act:disabled{opacity:.35}
+
+  /* week table */
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:14px}
+  .card h2{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin:0;padding:12px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+  table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px}
+  th,td{padding:8px 6px;text-align:center;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:500;font-size:10px;text-transform:uppercase}
+  tr:last-child td{border-bottom:none}
+  td.day{font-weight:600;color:var(--amber);text-align:left;padding-left:12px}
+  td.route{text-align:left;color:var(--muted);font-family:var(--sans);font-size:11px;max-width:0}
+  tr.editable:active{background:var(--panel2)}
+  .rest-badge{font-size:9px;padding:1px 5px;border-radius:4px;border:1px solid var(--line)}
+  .rest-badge.red{color:var(--amber);border-color:var(--amber-dim)}
+
+  /* footer buttons */
+  .footer{position:fixed;left:0;right:0;bottom:0;background:rgba(13,17,23,.94);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px;justify-content:center;z-index:40}
+  .footer button{flex:1;max-width:200px;background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:12px;font-size:13px;font-family:var(--mono)}
+  .footer button.primary{background:var(--amber);color:#0d1117;border-color:var(--amber);font-weight:600}
+
+  /* modal */
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center;z-index:60}
+  .modal.show{display:flex}
+  .sheet{background:var(--panel);width:100%;max-width:560px;border-radius:18px 18px 0 0;border:1px solid var(--line);border-bottom:none;padding:18px 16px calc(18px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto}
+  .sheet h3{margin:0 0 4px;font-size:16px}
+  .sheet .hint{color:var(--muted);font-size:12px;margin-bottom:14px}
+  .field{margin-bottom:12px}
+  .field label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+  .field input,.field textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:11px;font-size:16px;font-family:var(--mono)}
+  .field textarea{font-family:var(--sans);min-height:70px;resize:vertical}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .sheet .btns{display:flex;gap:8px;margin-top:8px}
+  .sheet .btns button{flex:1;border-radius:10px;padding:13px;font-size:14px;border:1px solid var(--line);background:var(--panel2);color:var(--txt);font-family:var(--mono)}
+  .sheet .btns .go{background:var(--amber);color:#0d1117;border-color:var(--amber);font-weight:600}
+  .nowbtn{background:var(--panel2);border:1px solid var(--amber-dim);color:var(--amber);border-radius:8px;padding:6px 10px;font-size:12px;font-family:var(--mono);margin-top:6px}
+  .segmented{display:flex;gap:6px}
+  .segmented button{flex:1;background:var(--bg);border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:9px;font-size:12px;font-family:var(--mono)}
+  .segmented button.active{border-color:var(--amber);color:var(--amber)}
+
+  /* route chips editor */
+  .pills{display:flex;flex-wrap:wrap;gap:7px}
+  .pills .pill{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:18px;padding:9px 14px;font-size:14px;font-family:var(--mono)}
+  .pills .pill:active{border-color:var(--amber);color:var(--amber);background:#211a0d}
+  .addrow{display:flex;gap:8px}
+  .addrow input{flex:1}
+  .addrow button{background:var(--amber);color:#0d1117;border:none;border-radius:9px;padding:0 18px;font-weight:600;font-family:var(--mono);font-size:14px}
+  .chips{display:flex;flex-wrap:wrap;align-items:center;gap:5px;min-height:52px;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:11px}
+  .chip{display:inline-flex;align-items:center;gap:8px;background:#211a0d;border:1px solid var(--amber-dim);color:var(--amber);border-radius:9px;padding:8px 8px 8px 12px;font-size:14px;font-family:var(--mono)}
+  .chip b{font-size:18px;line-height:.6;opacity:.75;padding:0 4px}
+  .chip b:active{opacity:1;color:var(--red)}
+  .chips .arrow{color:var(--muted);font-size:15px}
+  .chips .empty{color:var(--muted);font-size:12px;font-family:var(--sans)}
+
+  /* signature */
+  #sigCanvas{width:100%;height:180px;background:#fff;border-radius:10px;touch-action:none;display:block}
+
+  /* ---------- PRINT: A4 Reisekosten form ---------- */
+  #printForm{display:none}
+  @media screen{ #printForm{display:none!important} }
+  @media print{
+    @page{size:A4 landscape;margin:8mm}
+    body{background:#fff}
+    .wrap,.footer,.modal{display:none!important}
+    #printForm{display:block!important;color:#000;font-family:Arial,Helvetica,sans-serif;font-size:8.5px}
+    #printForm *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .pf-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
+    .pf-title{font-size:16px;font-weight:bold}
+    .pf-meta{font-size:9px;line-height:1.6}
+    .pf-meta b{display:inline-block;min-width:0}
+    .pf-num{border:1.5px solid #000;padding:2px 8px;font-size:12px;font-weight:bold}
+    table.pf{width:100%;border-collapse:collapse;table-layout:fixed}
+    table.pf th,table.pf td{border:1px solid #000;padding:2px 3px;vertical-align:top;overflow:hidden}
+    table.pf th{font-size:7.5px;text-align:center;background:#eee}
+    .pf-day{font-weight:bold;text-align:center;font-size:10px}
+    .pf-sub{font-size:6.5px;color:#000}
+    .pf-time{font-family:'Courier New',monospace;font-size:9px}
+    .pf-route{font-size:8px;line-height:1.35}
+    .pf-km{font-family:'Courier New',monospace;font-size:9px;text-align:right}
+    .pf-foot{display:flex;justify-content:space-between;margin-top:6px;align-items:flex-end}
+    .pf-sig{font-size:9px}
+    .pf-sig img{display:block;height:34px;margin-top:2px}
+    .pf-line{border-bottom:1px solid #000;display:inline-block;min-width:120px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div class="brand">Program de bord</div>
+    <div class="weeknav">
+      <button onclick="shiftWeek(-1)">‹</button>
+      <div class="lbl" id="weekLbl">—</div>
+      <button onclick="shiftWeek(1)">›</button>
+    </div>
+  </div>
+
+  <!-- LIVE STATUS -->
+  <div class="live" id="liveCard">
+    <div class="statusrow">
+      <div class="status"><span class="dot"></span><span id="statusTxt">Oprit</span></div>
+      <div class="today" id="todayLbl">—</div>
+    </div>
+
+    <div class="bignum" id="workedBig">00:00<small> h</small></div>
+    <div class="biglbl" id="workedLbl">Program neînceput azi</div>
+
+    <div class="resttoggle">
+      <button id="rtNormal" onclick="setPlannedRest('normal')">Odihnă normală<span class="sub">11h · stop max <b id="maxNormal">—</b></span></button>
+      <button id="rtReduced" onclick="setPlannedRest('reduced')">Odihnă redusă<span class="sub">9h · stop max <b id="maxReduced">—</b></span></button>
+    </div>
+
+    <div class="grid2">
+      <div class="stat"><div class="k">Mai poți lucra până la</div><div class="v amber" id="maxStop">—</div></div>
+      <div class="stat"><div class="k">Timp rămas până la stop</div><div class="v" id="remain">—</div></div>
+    </div>
+
+    <div class="reduced">
+      <span>Odihne reduse (9h) folosite:</span>
+      <span class="pips" id="pips"></span>
+      <span id="reducedTxt"></span>
+    </div>
+  </div>
+
+  <!-- ACTION BUTTONS -->
+  <div class="actions">
+    <button class="act start" id="btnStart" onclick="openStart()"><span class="ico">▶</span>Start program</button>
+    <button class="act route" onclick="openRoute()"><span class="ico">⛬</span>Traseu</button>
+    <button class="act stop" id="btnStop" onclick="openStop()"><span class="ico">■</span>Stop program</button>
+  </div>
+
+  <!-- WEEK TABLE -->
+  <div class="card">
+    <h2>Săptămâna curentă <span id="weekRange" style="color:var(--muted);font-family:var(--mono)"></span></h2>
+    <div style="overflow-x:auto">
+      <table id="weekTable">
+        <thead>
+          <tr><th>Zi</th><th>Start</th><th>Stop</th><th>Program</th><th>Km</th><th>Odihnă</th><th>Traseu</th></tr>
+        </thead>
+        <tbody id="weekBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <button onclick="openDriver()">Date șofer</button>
+  <button onclick="backup()">Backup</button>
+  <button class="primary" onclick="printForm()">Printează / PDF</button>
+</div>
+
+<!-- ============ MODALS ============ -->
+<div class="modal" id="mStart">
+  <div class="sheet">
+    <h3>Start program</h3>
+    <div class="hint" id="startDayHint"></div>
+    <div class="field">
+      <label>Ora de început</label>
+      <input type="time" id="startTime">
+      <button class="nowbtn" onclick="document.getElementById('startTime').value=nowHM()">Ora curentă</button>
+    </div>
+    <div class="field">
+      <label>Km bord la start (Tachostand)</label>
+      <input type="number" id="startKm" inputmode="numeric" placeholder="ex. 815409">
+    </div>
+    <div class="btns">
+      <button onclick="closeModal('mStart')">Anulează</button>
+      <button class="go" onclick="saveStart()">Pornește</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="mRoute">
+  <div class="sheet">
+    <h3>Traseu (Tourablauf)</h3>
+    <div class="hint" id="routeDayHint"></div>
+    <div class="field">
+      <label>Orașe frecvente — apasă pentru a adăuga</label>
+      <div class="pills" id="freqPills"></div>
+    </div>
+    <div class="field">
+      <label>Adaugă alt oraș</label>
+      <div class="addrow">
+        <input id="cityInput" placeholder="scrie un oraș…" autocomplete="off" autocapitalize="words">
+        <button type="button" onclick="addCityFromInput()">+ Adaugă</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Traseul zilei — apasă × ca să ștergi un oraș</label>
+      <div class="chips" id="routeChips"></div>
+    </div>
+    <div class="btns">
+      <button onclick="clearRoute()">Golește</button>
+      <button onclick="closeModal('mRoute')">Anulează</button>
+      <button class="go" onclick="saveRoute()">Salvează</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="mStop">
+  <div class="sheet">
+    <h3>Stop program</h3>
+    <div class="hint" id="stopDayHint"></div>
+    <div class="field">
+      <label>Ora de oprire</label>
+      <input type="time" id="stopTime">
+      <button class="nowbtn" onclick="document.getElementById('stopTime').value=nowHM()">Ora curentă</button>
+    </div>
+    <div class="field">
+      <label>Km bord la stop (Tachostand)</label>
+      <input type="number" id="stopKm" inputmode="numeric" placeholder="ex. 815875">
+    </div>
+    <div class="btns">
+      <button onclick="closeModal('mStop')">Anulează</button>
+      <button class="go" onclick="saveStop()">Oprește · începe pauza</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="mEdit">
+  <div class="sheet">
+    <h3 id="editTitle">Editează ziua</h3>
+    <div class="hint">Corectează manual orice câmp.</div>
+    <div class="row2">
+      <div class="field"><label>Start</label><input type="time" id="eStart"></div>
+      <div class="field"><label>Stop</label><input type="time" id="eStop"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Km start</label><input type="number" id="eStartKm" inputmode="numeric"></div>
+      <div class="field"><label>Km stop</label><input type="number" id="eStopKm" inputmode="numeric"></div>
+    </div>
+    <div class="field"><label>Traseu</label><textarea id="eRoute"></textarea></div>
+    <div class="row2">
+      <div class="field"><label>Auflieger (semiremorcă)</label><input id="eAufl" placeholder="opțional"></div>
+      <div class="field"><label>Tournummer / Maut</label><input id="eTour" placeholder="opțional"></div>
+    </div>
+    <div class="field">
+      <label>Tip odihnă după această zi</label>
+      <div class="segmented">
+        <button id="segAuto" onclick="setSeg('auto')">Auto</button>
+        <button id="segNormal" onclick="setSeg('normal')">Normală 11h</button>
+        <button id="segReduced" onclick="setSeg('reduced')">Redusă 9h</button>
+      </div>
+    </div>
+    <div class="btns">
+      <button onclick="clearDay()">Golește ziua</button>
+      <button onclick="closeModal('mEdit')">Anulează</button>
+      <button class="go" onclick="saveEdit()">Salvează</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="mDriver">
+  <div class="sheet">
+    <h3>Date șofer & vehicul</h3>
+    <div class="hint">Se scriu automat în antetul formularului. Se rețin pentru toate săptămânile.</div>
+    <div class="field"><label>Nume complet</label><input id="dName"></div>
+    <div class="row2">
+      <div class="field"><label>PersonalNr.</label><input id="dPnr"></div>
+      <div class="field"><label>Fahrzeug</label><input id="dVeh"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Standort</label><input id="dStd"></div>
+      <div class="field"><label>Kunde (opțional)</label><input id="dKunde"></div>
+    </div>
+    <div class="field"><label>Nr. document (colț dreapta sus)</label><input id="dDocnr" inputmode="numeric" placeholder="ex. 24"></div>
+    <div class="btns">
+      <button onclick="closeModal('mDriver')">Închide</button>
+      <button class="go" onclick="saveDriver()">Salvează</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="mSig">
+  <div class="sheet">
+    <h3>Semnătură (Apple Pencil)</h3>
+    <div class="hint">Semnează cu creionul, apoi confirmă. Se atașează pe formular la print.</div>
+    <canvas id="sigCanvas"></canvas>
+    <div class="btns" style="margin-top:12px">
+      <button onclick="clearSig()">Șterge</button>
+      <button onclick="closeModal('mSig')">Anulează</button>
+      <button class="go" onclick="saveSig()">Confirmă și printează</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PRINT FORM (A4) ============ -->
+<div id="printForm"></div>
+
+<script>
+"use strict";
+const DAYS = ["Mo","Di","Mi","Do","Fr","Sa","So"];
+const DAYS_FULL = {Mo:"Luni",Di:"Marți",Mi:"Miercuri",Do:"Joi",Fr:"Vineri",Sa:"Sâmbătă",So:"Duminică"};
+const STORE = "reisekosten_bord_v1";
+
+let state = load();
+let viewMonday = mondayOf(new Date());
+let editingDay = null;
+let editSeg = 'auto';
+
+/* ---------- storage ---------- */
+function load(){
+  try{ const s = JSON.parse(localStorage.getItem(STORE)); if(s) return s; }catch(e){}
+  return { driver:{name:"Anghel Constantin Olivian",pnr:"4232",veh:"AA BR 535",std:"Aalen",kunde:"",docnr:""}, plannedRest:"normal", weeks:{} };
+}
+function save(){ try{ localStorage.setItem(STORE, JSON.stringify(state)); }catch(e){ alert("Nu am putut salva (stocare browser blocată). Folosește Backup."); } }
+
+/* ---------- date helpers ---------- */
+function mondayOf(d){ const x=new Date(d); const day=(x.getDay()+6)%7; x.setDate(x.getDate()-day); x.setHours(0,0,0,0); return x; }
+function fmtDate(d){ return String(d.getDate()).padStart(2,'0')+"."+String(d.getMonth()+1).padStart(2,'0')+"."+d.getFullYear(); }
+function fmtDM(d){ return String(d.getDate()).padStart(2,'0')+"."+String(d.getMonth()+1).padStart(2,'0'); }
+function isoWeek(d){ const t=new Date(d); t.setHours(0,0,0,0); t.setDate(t.getDate()+3-((t.getDay()+6)%7)); const w1=new Date(t.getFullYear(),0,4); return 1+Math.round(((t-w1)/86400000-3+((w1.getDay()+6)%7))/7); }
+function weekKey(mon){ return mon.getFullYear()+"-W"+String(isoWeek(mon)).padStart(2,'0'); }
+function dateForDay(mon,idx){ const d=new Date(mon); d.setDate(d.getDate()+idx); return d; }
+function nowHM(){ const d=new Date(); return String(d.getHours()).padStart(2,'0')+":"+String(d.getMinutes()).padStart(2,'0'); }
+function hm2min(hm){ if(!hm) return null; const [h,m]=hm.split(':').map(Number); return h*60+m; }
+function min2hm(m){ m=((m%1440)+1440)%1440; return String(Math.floor(m/60)).padStart(2,'0')+":"+String(m%60).padStart(2,'0'); }
+function dur(startMin,stopMin){ if(startMin==null||stopMin==null) return null; let d=stopMin-startMin; if(d<0) d+=1440; return d; }
+function fmtDur(mins){ if(mins==null) return "—"; return String(Math.floor(mins/60)).padStart(2,'0')+":"+String(mins%60).padStart(2,'0'); }
+
+/* ---------- week data ---------- */
+function curWeek(){ const k=weekKey(viewMonday); if(!state.weeks[k]) state.weeks[k]={days:{}}; return state.weeks[k]; }
+function dayData(dayKey){ const w=curWeek(); if(!w.days[dayKey]) w.days[dayKey]={}; return w.days[dayKey]; }
+function todayKey(){ // maps real today to Mo..So if within viewed week
+  const t=mondayOf(new Date());
+  if(t.getTime()!==viewMonday.getTime()) return null;
+  return DAYS[(new Date().getDay()+6)%7];
+}
+
+/* rest classification: gap from this day's stop to next day's start */
+function restAfter(idx){
+  const w=curWeek(); const a=w.days[DAYS[idx]]; const b=w.days[DAYS[idx+1]];
+  if(!a||!a.stop) return null;
+  if(!b||!b.start) return null;
+  const d=dur(hm2min(a.stop),hm2min(b.start));
+  return d;
+}
+function restType(idx){
+  const w=curWeek(); const a=w.days[DAYS[idx]];
+  if(a&&a.restOverride&&a.restOverride!=='auto') return a.restOverride;
+  const d=restAfter(idx);
+  if(d==null) return null;
+  if(d>=9*60 && d<11*60) return 'reduced';
+  if(d>=11*60) return 'normal';
+  return 'short'; // under 9h = illegal/short
+}
+function reducedUsed(){
+  let n=0; for(let i=0;i<6;i++){ if(restType(i)==='reduced') n++; } return n;
+}
+
+/* ---------- render ---------- */
+function render(){
+  viewMonday=mondayOf(viewMonday);
+  document.getElementById('weekLbl').textContent="Săpt. "+isoWeek(viewMonday)+" · "+viewMonday.getFullYear();
+  const sun=dateForDay(viewMonday,6);
+  document.getElementById('weekRange').textContent=fmtDM(viewMonday)+"–"+fmtDM(sun);
+
+  renderLive();
+  renderTable();
+  save();
+}
+
+function renderLive(){
+  const card=document.getElementById('liveCard');
+  const tk=todayKey();
+  const d=tk?dayData(tk):null;
+  const btnStart=document.getElementById('btnStart');
+  const btnStop=document.getElementById('btnStop');
+
+  // planned rest toggle visuals
+  document.getElementById('rtNormal').classList.toggle('active',state.plannedRest==='normal');
+  document.getElementById('rtReduced').classList.toggle('active',state.plannedRest==='reduced');
+
+  // reduced pips
+  const used=reducedUsed();
+  const willReduce=state.plannedRest==='reduced'?1:0;
+  const pips=document.getElementById('pips'); pips.innerHTML="";
+  for(let i=0;i<3;i++){ const s=document.createElement('span'); s.className="pip"+(i<used?" used":""); pips.appendChild(s); }
+  const rt=document.getElementById('reducedTxt');
+  const left=3-used;
+  rt.textContent = left>0? (left+" rămase") : "0 rămase — următoarea trebuie normală";
+  rt.style.color = left>0? "var(--muted)":"var(--red)";
+
+  if(tk && d && d.start && !d.stop){
+    // program active
+    const startMin=hm2min(d.start);
+    const now=new Date(); const nowMin=now.getHours()*60+now.getMinutes();
+    let worked=nowMin-startMin; if(worked<0) worked+=1440;
+    document.getElementById('workedBig').innerHTML=fmtDur(worked)+"<small> h</small>";
+    document.getElementById('workedLbl').textContent="Program activ din "+d.start;
+    document.getElementById('statusTxt').textContent="Activ · "+DAYS_FULL[tk];
+    // amplitude limits: start + 13h (normal) / +15h (reduced)
+    const maxN=startMin+13*60, maxR=startMin+15*60;
+    document.getElementById('maxNormal').textContent=min2hm(maxN);
+    document.getElementById('maxReduced').textContent=min2hm(maxR);
+    const chosenMax=state.plannedRest==='reduced'?maxR:maxN;
+    document.getElementById('maxStop').textContent=min2hm(chosenMax);
+    let remain=chosenMax-nowMin; if(remain>720) remain-=1440;
+    document.getElementById('remain').textContent=(remain<0?"-":"")+fmtDur(Math.abs(remain));
+    const rv=document.getElementById('remain');
+    card.className="live on";
+    if(remain<=60&&remain>0){card.className="live warn"; rv.className="v amber";}
+    else if(remain<=0){card.className="live stop"; rv.className="v red"; document.getElementById('statusTxt').textContent="DEPĂȘIT · oprește!";}
+    else rv.className="v green";
+    btnStart.disabled=true; btnStop.disabled=false;
+  } else if(tk && d && d.start && d.stop){
+    // finished today
+    const p=dur(hm2min(d.start),hm2min(d.stop));
+    document.getElementById('workedBig').innerHTML=fmtDur(p)+"<small> h</small>";
+    document.getElementById('workedLbl').textContent="Program încheiat azi · pauză în curs";
+    document.getElementById('statusTxt').textContent="Pauză · "+DAYS_FULL[tk];
+    document.getElementById('maxStop').textContent="—";
+    document.getElementById('remain').textContent="în pauză";
+    document.getElementById('remain').className="v";
+    document.getElementById('maxNormal').textContent="—";
+    document.getElementById('maxReduced').textContent="—";
+    card.className="live";
+    btnStart.disabled=false; btnStop.disabled=true;
+  } else {
+    // not started
+    document.getElementById('workedBig').innerHTML="00:00<small> h</small>";
+    document.getElementById('workedLbl').textContent= tk? "Program neînceput azi ("+DAYS_FULL[tk]+")":"Vizualizezi altă săptămână";
+    document.getElementById('statusTxt').textContent= tk? "Oprit":"Istoric";
+    document.getElementById('maxStop').textContent="—";
+    document.getElementById('remain').textContent="—";
+    document.getElementById('remain').className="v";
+    document.getElementById('maxNormal').textContent="—";
+    document.getElementById('maxReduced').textContent="—";
+    card.className="live";
+    btnStart.disabled=!tk; btnStop.disabled=true;
+  }
+  document.getElementById('todayLbl').textContent=fmtDate(new Date());
+}
+
+function renderTable(){
+  const tb=document.getElementById('weekBody'); tb.innerHTML="";
+  const w=curWeek();
+  for(let i=0;i<7;i++){
+    const key=DAYS[i]; const d=w.days[key]||{};
+    const date=dateForDay(viewMonday,i);
+    const tr=document.createElement('tr'); tr.className="editable"; tr.onclick=()=>openEdit(key);
+    const p=dur(hm2min(d.start),hm2min(d.stop));
+    const km=(d.startKm!=null&&d.stopKm!=null&&d.stopKm!==''&&d.startKm!=='')?(Number(d.stopKm)-Number(d.startKm)):null;
+    const rt=restType(i);
+    let restHtml="—";
+    if(rt==='reduced') restHtml='<span class="rest-badge red">9h redusă</span>';
+    else if(rt==='normal') restHtml='<span class="rest-badge">11h</span>';
+    else if(rt==='short') restHtml='<span class="rest-badge red">&lt;9h!</span>';
+    tr.innerHTML=
+      '<td class="day">'+key+' <span style="color:var(--muted);font-weight:400">'+fmtDM(date)+'</span></td>'+
+      '<td>'+(d.start||'·')+'</td>'+
+      '<td>'+(d.stop||'·')+'</td>'+
+      '<td>'+(p!=null?fmtDur(p):'·')+'</td>'+
+      '<td>'+(km!=null?km:'·')+'</td>'+
+      '<td>'+restHtml+'</td>'+
+      '<td class="route">'+(d.route?esc(d.route):'')+'</td>';
+    tb.appendChild(tr);
+  }
+}
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ---------- actions ---------- */
+function shiftWeek(n){ viewMonday=new Date(viewMonday); viewMonday.setDate(viewMonday.getDate()+n*7); render(); }
+function setPlannedRest(r){ state.plannedRest=r; render(); }
+
+function openStart(){
+  const tk=todayKey(); if(!tk){ alert("Ești pe altă săptămână. Revino la săptămâna curentă pentru Start."); return; }
+  const d=dayData(tk);
+  document.getElementById('startDayHint').textContent=DAYS_FULL[tk]+", "+fmtDate(new Date());
+  document.getElementById('startTime').value=d.start||nowHM();
+  document.getElementById('startKm').value=d.startKm||'';
+  showModal('mStart');
+}
+function saveStart(){
+  const tk=todayKey(); const d=dayData(tk);
+  d.start=document.getElementById('startTime').value;
+  d.startKm=document.getElementById('startKm').value;
+  d.stop=null;
+  closeModal('mStart'); render();
+}
+const SEED_CITIES=["Aalen","Dillingen","Wehingen","Schwäbisch Gmünd","Reutlingen","Mössingen","Schramberg","Balingen","Altdorf","Tamm","Möglingen","Pforzheim"];
+let routeBuf=[];
+function parseRoute(str){ if(!str) return []; return str.split(/→|->|—>|=>/).map(s=>s.trim()).filter(Boolean); }
+function joinRoute(arr){ return arr.join(" → "); }
+function frequentCities(){
+  const counts={};
+  Object.values(state.weeks||{}).forEach(w=>Object.values(w.days||{}).forEach(d=>{
+    (d.routeCities||parseRoute(d.route||"")).forEach(c=>{ counts[c]=(counts[c]||0)+1; });
+  }));
+  const used=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
+  const out=[...used]; SEED_CITIES.forEach(c=>{ if(!out.includes(c)) out.push(c); });
+  return out.slice(0,14);
+}
+function openRoute(){
+  const tk=todayKey(); if(!tk){ alert("Revino la săptămâna curentă."); return; }
+  const d=dayData(tk);
+  document.getElementById('routeDayHint').textContent=DAYS_FULL[tk]+" · construiește traseul";
+  routeBuf = d.routeCities ? d.routeCities.slice() : parseRoute(d.route||"");
+  renderFreqPills(); renderRouteChips();
+  showModal('mRoute');
+}
+function renderFreqPills(){
+  const box=document.getElementById('freqPills'); box.innerHTML="";
+  frequentCities().forEach(c=>{
+    const b=document.createElement('button'); b.type="button"; b.className="pill"; b.textContent=c;
+    b.onclick=()=>{ routeBuf.push(c); renderRouteChips(); };
+    box.appendChild(b);
+  });
+}
+function renderRouteChips(){
+  const box=document.getElementById('routeChips'); box.innerHTML="";
+  if(routeBuf.length===0){ box.innerHTML='<span class="empty">Niciun oraș încă — apasă un oraș frecvent sau adaugă unul.</span>'; return; }
+  routeBuf.forEach((c,i)=>{
+    if(i>0){ const a=document.createElement('span'); a.className="arrow"; a.textContent="→"; box.appendChild(a); }
+    const ch=document.createElement('span'); ch.className="chip";
+    const t=document.createElement('span'); t.textContent=c; ch.appendChild(t);
+    const x=document.createElement('b'); x.textContent="×"; x.onclick=()=>{ routeBuf.splice(i,1); renderRouteChips(); };
+    ch.appendChild(x); box.appendChild(ch);
+  });
+}
+function addCityFromInput(){
+  const inp=document.getElementById('cityInput'); const v=inp.value.trim();
+  if(!v) return; routeBuf.push(v); inp.value=""; renderFreqPills(); renderRouteChips(); inp.focus();
+}
+function clearRoute(){ routeBuf=[]; renderRouteChips(); }
+function saveRoute(){
+  const tk=todayKey(); const d=dayData(tk);
+  d.routeCities=routeBuf.slice(); d.route=joinRoute(routeBuf);
+  closeModal('mRoute'); render();
+}
+function openStop(){
+  const tk=todayKey(); if(!tk){ alert("Revino la săptămâna curentă."); return; }
+  const d=dayData(tk);
+  document.getElementById('stopDayHint').textContent=DAYS_FULL[tk]+" · încheie programul";
+  document.getElementById('stopTime').value=d.stop||nowHM();
+  document.getElementById('stopKm').value=d.stopKm||'';
+  showModal('mStop');
+}
+function saveStop(){
+  const tk=todayKey(); const d=dayData(tk);
+  d.stop=document.getElementById('stopTime').value;
+  d.stopKm=document.getElementById('stopKm').value;
+  closeModal('mStop'); render();
+}
+
+/* edit any day */
+function openEdit(key){
+  editingDay=key; const d=dayData(key);
+  document.getElementById('editTitle').textContent="Editează "+DAYS_FULL[key];
+  document.getElementById('eStart').value=d.start||'';
+  document.getElementById('eStop').value=d.stop||'';
+  document.getElementById('eStartKm').value=d.startKm||'';
+  document.getElementById('eStopKm').value=d.stopKm||'';
+  document.getElementById('eRoute').value=d.route||'';
+  document.getElementById('eAufl').value=d.aufl||'';
+  document.getElementById('eTour').value=d.tour||'';
+  setSeg(d.restOverride||'auto');
+  showModal('mEdit');
+}
+function setSeg(v){ editSeg=v;
+  ['auto','normal','reduced'].forEach(x=>document.getElementById('seg'+x.charAt(0).toUpperCase()+x.slice(1)).classList.toggle('active',x===v));
+}
+function saveEdit(){
+  const d=dayData(editingDay);
+  d.start=document.getElementById('eStart').value||null;
+  d.stop=document.getElementById('eStop').value||null;
+  d.startKm=document.getElementById('eStartKm').value;
+  d.stopKm=document.getElementById('eStopKm').value;
+  d.route=document.getElementById('eRoute').value.trim();
+  d.routeCities=parseRoute(d.route);
+  d.aufl=document.getElementById('eAufl').value.trim();
+  d.tour=document.getElementById('eTour').value.trim();
+  d.restOverride=editSeg;
+  closeModal('mEdit'); render();
+}
+function clearDay(){
+  if(!confirm("Golești complet "+DAYS_FULL[editingDay]+"?")) return;
+  curWeek().days[editingDay]={};
+  closeModal('mEdit'); render();
+}
+
+/* driver */
+function openDriver(){
+  const dr=state.driver;
+  document.getElementById('dName').value=dr.name||'';
+  document.getElementById('dPnr').value=dr.pnr||'';
+  document.getElementById('dVeh').value=dr.veh||'';
+  document.getElementById('dStd').value=dr.std||'';
+  document.getElementById('dKunde').value=dr.kunde||'';
+  document.getElementById('dDocnr').value=dr.docnr||'';
+  showModal('mDriver');
+}
+function saveDriver(){
+  state.driver={
+    name:document.getElementById('dName').value,
+    pnr:document.getElementById('dPnr').value,
+    veh:document.getElementById('dVeh').value,
+    std:document.getElementById('dStd').value,
+    kunde:document.getElementById('dKunde').value,
+    docnr:document.getElementById('dDocnr').value
+  };
+  closeModal('mDriver'); render();
+}
+
+/* backup / restore */
+function backup(){
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download="backup_reisekosten_"+weekKey(viewMonday)+".json"; a.click();
+  setTimeout(()=>{
+    if(confirm("Backup descărcat. Vrei să IMPORȚI un backup salvat anterior?")) restore();
+  },400);
+}
+function restore(){
+  const inp=document.createElement('input'); inp.type="file"; inp.accept="application/json";
+  inp.onchange=e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader();
+    r.onload=()=>{ try{ state=JSON.parse(r.result); save(); render(); alert("Backup importat."); }catch(err){ alert("Fișier invalid."); } };
+    r.readAsText(f); };
+  inp.click();
+}
+
+/* ---------- signature ---------- */
+let sigCtx,sigDrawing=false,sigHasInk=false;
+function initSig(){
+  const c=document.getElementById('sigCanvas');
+  const rect=c.getBoundingClientRect();
+  c.width=rect.width*2; c.height=rect.height*2;
+  sigCtx=c.getContext('2d'); sigCtx.scale(2,2); sigCtx.lineWidth=2.2; sigCtx.lineCap='round'; sigCtx.strokeStyle='#0b2a5b';
+  const pos=e=>{ const r=c.getBoundingClientRect(); const t=e.touches?e.touches[0]:e; return {x:t.clientX-r.left,y:t.clientY-r.top}; };
+  const start=e=>{ e.preventDefault(); sigDrawing=true; sigHasInk=true; const p=pos(e); sigCtx.beginPath(); sigCtx.moveTo(p.x,p.y); };
+  const move=e=>{ if(!sigDrawing)return; e.preventDefault(); const p=pos(e); sigCtx.lineTo(p.x,p.y); sigCtx.stroke(); };
+  const end=()=>{ sigDrawing=false; };
+  c.addEventListener('pointerdown',start); c.addEventListener('pointermove',move);
+  window.addEventListener('pointerup',end);
+}
+function clearSig(){ if(sigCtx){ sigCtx.clearRect(0,0,3000,3000); sigHasInk=false; } }
+function openSig(){ showModal('mSig'); setTimeout(()=>{ if(!sigCtx) initSig(); },50); }
+function saveSig(){
+  if(sigHasInk){ state.sig=document.getElementById('sigCanvas').toDataURL('image/png'); save(); }
+  closeModal('mSig');
+  buildPrintForm();
+  setTimeout(()=>window.print(),300);
+}
+
+/* ---------- print form ---------- */
+function printForm(){
+  buildPrintForm();
+  // offer signature first if none
+  if(!state.sig){
+    if(confirm("Vrei să adaugi semnătura (Apple Pencil) înainte de print?")){ openSig(); return; }
+  }
+  setTimeout(()=>window.print(),200);
+}
+function buildPrintForm(){
+  const dr=state.driver; const w=curWeek();
+  const mon=viewMonday; const sun=dateForDay(mon,6);
+  let rows="";
+  const order=["So0","Mo","Di","Mi","Do","Fr","Sa","So"]; // form shows So(prev) then Mo..Sa then So
+  // We render Mo..So of THIS week + a leading empty So
+  const seq=[{k:null,lbl:"So"}, {k:"Mo",lbl:"Mo"},{k:"Di",lbl:"Di"},{k:"Mi",lbl:"Mi"},{k:"Do",lbl:"Do"},{k:"Fr",lbl:"Fr"},{k:"Sa",lbl:"Sa"},{k:"So",lbl:"So"}];
+  seq.forEach((s,ix)=>{
+    const d=s.k?(w.days[s.k]||{}):{};
+    const idx=DAYS.indexOf(s.k);
+    // Nachtpause: von = this stop, bis = next start
+    let npVon="",npBis="";
+    if(s.k){ if(d.stop) npVon=d.stop; const nx=w.days[DAYS[idx+1]]; if(nx&&nx.start) npBis=nx.start; }
+    rows+=
+      '<tr>'+
+        '<td class="pf-day">'+s.lbl+'</td>'+
+        '<td></td>'+           /* Verlassen Wohnung */
+        '<td></td>'+           /* Beginn */
+        '<td></td>'+           /* Ende */
+        '<td></td>'+           /* Ankunft Wohnung */
+        '<td class="pf-time">'+npVon+'</td>'+  /* Nachtpause von */
+        '<td class="pf-time">'+npBis+'</td>'+  /* Nachtpause bis */
+        '<td class="pf-route">'+(d.route?esc(d.route):'')+'</td>'+
+        '<td class="pf-km"><span class="pf-sub">Beginn</span> '+(d.start||'')+' '+(d.startKm?('· '+d.startKm):'')+'<br><span class="pf-sub">Ende</span> '+(d.stop||'')+' '+(d.stopKm?('· '+d.stopKm):'')+'</td>'+
+        '<td>'+(d.aufl?esc(d.aufl):'')+'</td>'+ /* Tournummer/Maut - Auflieger */
+        '<td></td>'+           /* Stapler Nr */
+        '<td colspan="6"></td>'+ /* Personalabteilung */
+      '</tr>';
+  });
+
+  const sigImg=state.sig?('<img src="'+state.sig+'">'):'';
+  document.getElementById('printForm').innerHTML=
+    '<div class="pf-top">'+
+      '<div><div class="pf-title">Reisekosten</div>'+
+        '<div class="pf-meta">Datum von <b>'+fmtDate(mon)+'</b> bis <b>'+fmtDate(sun)+'</b></div></div>'+
+      '<div class="pf-meta" style="text-align:left">'+
+        'Kunde (nur bei Werkverkehreinsatz): <b>'+esc(dr.kunde||'')+'</b><br>'+
+        'PersonalNr.: <b>'+esc(dr.pnr||'')+'</b>&nbsp;&nbsp; Vor- und Nachname: <b>'+esc(dr.name||'')+'</b><br>'+
+        'Standort: <b>'+esc(dr.std||'')+'</b>&nbsp;&nbsp; Fahrzeug: <b>'+esc(dr.veh||'')+'</b>'+
+      '</div>'+
+      '<div class="pf-num">'+esc(dr.docnr||'')+'</div>'+
+    '</div>'+
+    '<table class="pf">'+
+      '<thead><tr>'+
+        '<th rowspan="2">Zeit</th><th colspan="4">Auswärtstätigkeit / Wohnung</th><th colspan="2">Nachtpause</th>'+
+        '<th rowspan="2">Tourablauf</th><th rowspan="2">Tachostand<br>(Beginn / Ende Tour)</th>'+
+        '<th rowspan="2">Tournummer /<br>Maut · Auflieger</th><th rowspan="2">Stapler<br>Nr</th>'+
+        '<th colspan="6">Füllt Personalabteilung aus !!!!</th>'+
+      '</tr><tr>'+
+        '<th>Verlassen<br>Wohnung</th><th>Beginn</th><th>Ende</th><th>Ankunft<br>Wohnung</th>'+
+        '<th>von</th><th>bis</th>'+
+        '<th>h-na</th><th>h-na2</th><th>Me-h</th><th>SF-h<br>WV</th><th>SF-h<br>Di</th><th>Spes</th>'+
+      '</tr></thead><tbody>'+rows+'</tbody></table>'+
+    '<div class="pf-foot">'+
+      '<div class="pf-sig">Datum: <b>'+fmtDate(sun)+'</b></div>'+
+      '<div class="pf-sig">Unterschrift:'+sigImg+'</div>'+
+    '</div>';
+}
+
+/* ---------- modal utils ---------- */
+function showModal(id){ document.getElementById(id).classList.add('show'); }
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('show'); }));
+document.getElementById('cityInput').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); addCityFromInput(); } });
+
+/* live tick */
+setInterval(()=>{ if(todayKey()) renderLive(); },30000);
+
+render();
+</script>
+</body>
+</html>
