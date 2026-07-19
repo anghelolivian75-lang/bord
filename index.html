@@ -392,6 +392,19 @@
 <!-- ============ PRINT FORM (A4) ============ -->
 <div id="printForm"></div>
 
+<!-- LICENSE LOCK -->
+<div id="licLock" style="display:none;position:fixed;inset:0;z-index:200;background:var(--bg);align-items:center;justify-content:center;padding:24px">
+  <div style="max-width:420px;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px 22px;text-align:center">
+    <div style="font-size:34px;margin-bottom:10px">🔒</div>
+    <h3 style="margin:0 0 8px;font-family:var(--mono)">Perioada de probă a expirat</h3>
+    <p style="color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 18px">Ai folosit cele 7 zile de probă pe acest dispozitiv. Pentru a continua, introdu codul de activare primit de la Olivian.</p>
+    <input id="licInput" placeholder="BORD-XXXX-XXXX" autocapitalize="characters" autocomplete="off" spellcheck="false"
+      style="width:100%;box-sizing:border-box;background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:var(--mono);font-size:17px;letter-spacing:.1em;text-align:center;padding:13px;margin-bottom:10px">
+    <div id="licErr" style="color:var(--red);font-size:12px;min-height:16px;margin-bottom:8px"></div>
+    <button onclick="tryActivate()" style="width:100%;border:none;border-radius:12px;padding:15px;background:var(--green);color:#0d1117;font-family:var(--mono);font-size:15px;font-weight:700">Activează</button>
+  </div>
+</div>
+<div id="licBadge" style="display:none;text-align:center;font-family:var(--mono);font-size:11px;color:var(--amber);padding:6px 0"></div>
 <script src="./tess/tesseract.min.js"></script>
 <script>
 "use strict";
@@ -962,7 +975,60 @@ document.getElementById('cityInput').addEventListener('keydown',e=>{ if(e.key===
 /* live tick */
 setInterval(()=>{ if(todayKey()) renderLive(); },30000);
 
+/* ---------- license: 7-day trial + activation code ---------- */
+const LIC_KEY='bord_lic_v1', TRIAL_DAYS=7;
+const LIC_HASHES=[
+'85100f627ab00ae4aff65fb16b069bcdf643e4c4c063e2b26932dbf7817bfe19',
+'b073a0d6b0faa7747a8bf58e64002a37eee493786a36c8f19b60e698a80ab378',
+'1ae074468300f7d122832081ce3f032266e08555a404a8979c3a614c27483884',
+'536956d29510dcb29ed4e68a07b3f2ae88987a93c86d3aa9f467e3676962941c',
+'c0f5a4a84913db2c6a946d1af67cc1fe7299e2b4f67ebe476353177df4f46d05',
+'ae012af606d6728256a01bc23c7d20cea1598eb8816906a58a7b39216a564fe7',
+'f0a8bd3eee718babeb823af9b020abc51dde7672ff7eade0767f67b642f9815c',
+'789e0991159fa7e059ddf65f2f9dcac2998f7cb7bb4bd676ad03e7f924c96488',
+'5b344121c067a3b5b2f04926179beb985f35c4d5af820142ef80bc29a8c6cccb',
+'6e07e40037d715175aa6764296e62b692fcff5e96834f310f12071d022a611a8'
+];
+function licLoad(){ try{ return JSON.parse(localStorage.getItem(LIC_KEY))||{}; }catch(e){ return {}; } }
+function licSave(o){ try{ localStorage.setItem(LIC_KEY,JSON.stringify(o)); }catch(e){} }
+async function sha256hex(s){
+  const b=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+function checkLicense(){
+  let l=licLoad();
+  if(l.ok) return;
+  if(!l.first){ l.first=Date.now(); licSave(l); }
+  const daysUsed=Math.floor((Date.now()-l.first)/86400000);
+  const left=TRIAL_DAYS-daysUsed;
+  if(left<=0){
+    document.getElementById('licLock').style.display='flex';
+  }else{
+    const b=document.getElementById('licBadge');
+    b.style.display='block';
+    b.textContent='Probă: '+left+(left===1?' zi rămasă':' zile rămase')+' · cere codul de activare de la Olivian';
+    document.querySelector('.wrap')?.prepend(b);
+  }
+}
+async function tryActivate(){
+  const raw=document.getElementById('licInput').value||'';
+  const norm=raw.replace(/[^a-z0-9]/gi,'').toUpperCase();
+  const err=document.getElementById('licErr');
+  if(!norm){ err.textContent='Introdu codul.'; return; }
+  const h=await sha256hex(norm);
+  if(LIC_HASHES.includes(h)){
+    const l=licLoad(); l.ok=true; l.code=h.slice(0,8); licSave(l);
+    document.getElementById('licLock').style.display='none';
+    const b=document.getElementById('licBadge'); if(b) b.style.display='none';
+    alert('Activat! Aplicația este deblocată pe acest dispozitiv.');
+  }else{
+    err.textContent='Cod invalid. Verifică și încearcă din nou.';
+  }
+}
+document.getElementById('licInput').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); tryActivate(); } });
+
 render();
+checkLicense();
 </script>
 </body>
 </html>
