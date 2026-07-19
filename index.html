@@ -691,7 +691,7 @@ function getOcrWorker(){
   if(!ocrWorkerPromise){
     ocrWorkerPromise = Tesseract.createWorker('deu+eng', 1, {
       workerPath: TESS_BASE + 'worker.min.js',
-      corePath: TESS_BASE,
+      corePath: TESS_BASE + 'tesseract-core-lstm.wasm.js',
       langPath: TESS_BASE,
       cacheMethod: 'none',
       logger: ()=>{}
