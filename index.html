@@ -209,6 +209,9 @@
     <button class="act route" onclick="openRoute()"><span class="ico">⛬</span>Traseu</button>
     <button class="act stop" id="btnStop" onclick="openStop()"><span class="ico">■</span>Stop program</button>
   </div>
+  <div class="actions" style="grid-template-columns:1fr">
+    <button class="act" style="background:var(--green);flex-direction:row" onclick="quickOcr()"><span class="ico">📷</span>Încarcă screenshot traseu (din Photos)</button>
+  </div>
 
   <!-- WEEK TABLE -->
   <div class="card">
@@ -593,6 +596,11 @@ function frequentCities(){
   const used=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
   const out=[...used]; SEED_CITIES.forEach(c=>{ if(!out.includes(c)) out.push(c); });
   return out.slice(0,14);
+}
+function quickOcr(){
+  const tk=todayKey(); if(!tk){ alert("Revino la săptămâna curentă."); return; }
+  openRoute();
+  document.getElementById('ocrFileInput').click();
 }
 function openRoute(){
   const tk=todayKey(); if(!tk){ alert("Revino la săptămâna curentă."); return; }
