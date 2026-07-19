@@ -968,13 +968,13 @@ function buildPrintForm(){
       '<tr>'+
         '<td class="pf-day">'+s.lbl+'</td>'+
         '<td'+gray+'></td>'+           /* Verlassen Wohnung */
-        '<td'+gray+'></td>'+           /* Beginn */
-        '<td'+gray+'></td>'+           /* Ende */
+        '<td class="pf-time"'+gray+'>'+(d.start||'')+'</td>'+  /* Beginn = ora start */
+        '<td class="pf-time"'+gray+'>'+(d.stop||'')+'</td>'+   /* Ende = ora stop */
         '<td'+gray+'></td>'+           /* Ankunft Wohnung */
         '<td class="pf-time"'+gray+'>'+npVon+'</td>'+  /* Nachtpause von */
         '<td class="pf-time"'+gray+'>'+npBis+'</td>'+  /* Nachtpause bis */
         '<td class="pf-route"'+gray+'>'+(d.route?esc(d.route):'')+'</td>'+
-        '<td class="pf-km"><span class="pf-sub">Beginn Tour</span> '+(d.start||'')+' '+(d.startKm?('· '+d.startKm):'')+'<br><span class="pf-sub">Ende Tour</span> '+(d.stop||'')+' '+(d.stopKm?('· '+d.stopKm):'')+'</td>'+
+        '<td class="pf-km"><span class="pf-sub">Beginn Tour</span> '+(d.startKm?esc(d.startKm):'')+'<br><span class="pf-sub">Ende Tour</span> '+(d.stopKm?esc(d.stopKm):'')+'</td>'+
         '<td>'+(d.tour?esc(d.tour):'')+'<br><span class="pf-sub">Auflieger:</span> '+(d.aufl?esc(d.aufl):'')+'</td>'+
         '<td></td>'+           /* Stapler Nr */
         '<td colspan="6"></td>'+ /* Personalabteilung */
