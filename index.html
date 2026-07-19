@@ -270,6 +270,10 @@
       <label>Km bord la start (Tachostand)</label>
       <input type="number" id="startKm" inputmode="numeric" placeholder="ex. 815409">
     </div>
+    <div class="field">
+      <label>Plecare de acasă — doar în prima zi (Verlassen Wohnung)</label>
+      <input type="time" id="startHome">
+    </div>
     <div class="btns">
       <button onclick="closeModal('mStart')">Anulează</button>
       <button class="go" onclick="saveStart()">Pornește</button>
@@ -336,6 +340,10 @@
       <label>Km bord la stop (Tachostand)</label>
       <input type="number" id="stopKm" inputmode="numeric" placeholder="ex. 815875">
     </div>
+    <div class="field">
+      <label>Sosire acasă — doar în ultima zi (Ankunft Wohnung)</label>
+      <input type="time" id="stopHome">
+    </div>
     <div class="btns">
       <button onclick="closeModal('mStop')">Anulează</button>
       <button class="go" onclick="saveStop()">Oprește · începe pauza</button>
@@ -350,6 +358,8 @@
     <div class="row2">
       <div class="field"><label>Start</label><input type="time" id="eStart"></div>
       <div class="field"><label>Stop</label><input type="time" id="eStop"></div>
+      <div class="field"><label>Plecare de acasă (Verlassen Wohnung)</label><input type="time" id="eHomeOut"></div>
+      <div class="field"><label>Sosire acasă (Ankunft Wohnung)</label><input type="time" id="eHomeIn"></div>
     </div>
     <div class="row2">
       <div class="field"><label>Km start</label><input type="number" id="eStartKm" inputmode="numeric"></div>
@@ -637,6 +647,7 @@ function saveStart(){
   const tk=todayKey(); const d=dayData(tk);
   d.start=document.getElementById('startTime').value;
   d.startKm=document.getElementById('startKm').value;
+  d.homeOut=document.getElementById('startHome').value||d.homeOut||'';
   d.stop=null;
   closeModal('mStart'); render();
 }
@@ -839,6 +850,7 @@ function saveStop(){
   const tk=todayKey(); const d=dayData(tk);
   d.stop=document.getElementById('stopTime').value;
   d.stopKm=document.getElementById('stopKm').value;
+  d.homeIn=document.getElementById('stopHome').value||d.homeIn||'';
   closeModal('mStop'); render();
 }
 
@@ -848,6 +860,8 @@ function openEdit(key){
   document.getElementById('editTitle').textContent="Editează "+DAYS_FULL[key];
   document.getElementById('eStart').value=d.start||'';
   document.getElementById('eStop').value=d.stop||'';
+  document.getElementById('eHomeOut').value=d.homeOut||'';
+  document.getElementById('eHomeIn').value=d.homeIn||'';
   document.getElementById('eStartKm').value=d.startKm||'';
   document.getElementById('eStopKm').value=d.stopKm||'';
   document.getElementById('eRoute').value=d.route||'';
@@ -863,6 +877,8 @@ function saveEdit(){
   const d=dayData(editingDay);
   d.start=document.getElementById('eStart').value||null;
   d.stop=document.getElementById('eStop').value||null;
+  d.homeOut=document.getElementById('eHomeOut').value||'';
+  d.homeIn=document.getElementById('eHomeIn').value||'';
   d.startKm=document.getElementById('eStartKm').value;
   d.stopKm=document.getElementById('eStopKm').value;
   d.route=document.getElementById('eRoute').value.trim();
@@ -967,10 +983,10 @@ function buildPrintForm(){
     rows+=
       '<tr>'+
         '<td class="pf-day">'+s.lbl+'</td>'+
-        '<td'+gray+'></td>'+           /* Verlassen Wohnung */
+        '<td class="pf-time"'+gray+'>'+(d.homeOut||'')+'</td>'+  /* Verlassen Wohnung */
         '<td class="pf-time"'+gray+'>'+(d.start||'')+'</td>'+  /* Beginn = ora start */
         '<td class="pf-time"'+gray+'>'+(d.stop||'')+'</td>'+   /* Ende = ora stop */
-        '<td'+gray+'></td>'+           /* Ankunft Wohnung */
+        '<td class="pf-time"'+gray+'>'+(d.homeIn||'')+'</td>'+ /* Ankunft Wohnung */
         '<td class="pf-time"'+gray+'>'+npVon+'</td>'+  /* Nachtpause von */
         '<td class="pf-time"'+gray+'>'+npBis+'</td>'+  /* Nachtpause bis */
         '<td class="pf-route"'+gray+'>'+(d.route?esc(d.route):'')+'</td>'+
