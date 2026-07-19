@@ -627,6 +627,8 @@ function addCityFromInput(){
 }
 function clearRoute(){ routeBuf=[]; renderRouteChips(); }
 function saveRoute(){
+  const inp=document.getElementById('cityInput');
+  if(inp && inp.value.trim()){ routeBuf.push(inp.value.trim()); inp.value=""; }
   const tk=todayKey(); const d=dayData(tk);
   d.routeCities=routeBuf.slice(); d.route=joinRoute(routeBuf);
   closeModal('mRoute'); render();
@@ -755,6 +757,11 @@ function confirmOcrCities(){
   ocrDetected.filter(c=>c.checked && c.text.trim()).forEach(c=>routeBuf.push(c.text.trim()));
   closeModal('mOcrConfirm');
   renderFreqPills(); renderRouteChips();
+  // Persist immediately so the imported route is saved even if the user forgets to press Salvează
+  const tk=todayKey();
+  if(tk){ const d=dayData(tk); d.routeCities=routeBuf.slice(); d.route=joinRoute(routeBuf); save(); }
+  const st=document.getElementById('ocrStatus');
+  if(st){ st.style.display='block'; st.className='ocrstatus'; st.textContent='Traseu salvat ('+routeBuf.length+' orașe). Poți adăuga altele sau apăsa Salvează.'; }
 }
 function openStop(){
   const tk=todayKey(); if(!tk){ alert("Revino la săptămâna curentă."); return; }
