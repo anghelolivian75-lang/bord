@@ -1028,7 +1028,7 @@ function parseDispo(t){
   r.date=dt+(ab?(' · '+ab[1]):'')+(bis?('–'+bis[1]):'');
   m=t.match(/(\d{1,3}[.,]?\d{0,2})\s*PAL/i); if(m) r.colli=m[1].replace(',00','')+' PAL';
   m=t.match(/(\d{1,3}(?:[.,]\d{3})+|\d{4,6})\s*kg/i); if(m) r.kg=m[1]+' kg';
-  const plz=[...t.matchAll(/D[-\s]?(\d{5})\s+([A-Za-zÄÖÜäöüß][\wÄÖÜäöüß.\- ]{2,40})/g)];
+  const plz=[...t.matchAll(/D[-\s]?(\d{5})\s+([A-Za-zÄÖÜäöüß][A-Za-zÄÖÜäöüß.\-]*(?:\s[A-Za-zÄÖÜäöüß][A-Za-zÄÖÜäöüß.\-]+)*)/g)];
   if(plz[0]) r.abs='D-'+plz[0][1]+' '+plz[0][2].trim();
   if(plz[1]) r.emp='D-'+plz[1][1]+' '+plz[1][2].trim();
   m=t.match(/Anlieferung[^\n]{0,50}/i); if(m) r.obs=m[0].trim();
