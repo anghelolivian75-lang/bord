@@ -963,18 +963,19 @@ function buildPrintForm(){
     // Nachtpause: von = this stop, bis = next start
     let npVon="",npBis="";
     if(s.k){ if(d.stop) npVon=d.stop; const nx=w.days[DAYS[idx+1]]; if(nx&&nx.start) npBis=nx.start; }
+    const gray=(ix===0)?' style="background:#c8c8c8"':'';
     rows+=
       '<tr>'+
         '<td class="pf-day">'+s.lbl+'</td>'+
-        '<td></td>'+           /* Verlassen Wohnung */
-        '<td></td>'+           /* Beginn */
-        '<td></td>'+           /* Ende */
-        '<td></td>'+           /* Ankunft Wohnung */
-        '<td class="pf-time">'+npVon+'</td>'+  /* Nachtpause von */
-        '<td class="pf-time">'+npBis+'</td>'+  /* Nachtpause bis */
-        '<td class="pf-route">'+(d.route?esc(d.route):'')+'</td>'+
-        '<td class="pf-km"><span class="pf-sub">Beginn</span> '+(d.start||'')+' '+(d.startKm?('· '+d.startKm):'')+'<br><span class="pf-sub">Ende</span> '+(d.stop||'')+' '+(d.stopKm?('· '+d.stopKm):'')+'</td>'+
-        '<td>'+(d.aufl?esc(d.aufl):'')+'</td>'+ /* Tournummer/Maut - Auflieger */
+        '<td'+gray+'></td>'+           /* Verlassen Wohnung */
+        '<td'+gray+'></td>'+           /* Beginn */
+        '<td'+gray+'></td>'+           /* Ende */
+        '<td'+gray+'></td>'+           /* Ankunft Wohnung */
+        '<td class="pf-time"'+gray+'>'+npVon+'</td>'+  /* Nachtpause von */
+        '<td class="pf-time"'+gray+'>'+npBis+'</td>'+  /* Nachtpause bis */
+        '<td class="pf-route"'+gray+'>'+(d.route?esc(d.route):'')+'</td>'+
+        '<td class="pf-km"><span class="pf-sub">Beginn Tour</span> '+(d.start||'')+' '+(d.startKm?('· '+d.startKm):'')+'<br><span class="pf-sub">Ende Tour</span> '+(d.stop||'')+' '+(d.stopKm?('· '+d.stopKm):'')+'</td>'+
+        '<td>'+(d.tour?esc(d.tour):'')+'<br><span class="pf-sub">Auflieger:</span> '+(d.aufl?esc(d.aufl):'')+'</td>'+
         '<td></td>'+           /* Stapler Nr */
         '<td colspan="6"></td>'+ /* Personalabteilung */
       '</tr>';
@@ -995,8 +996,8 @@ function buildPrintForm(){
     '<table class="pf">'+
       '<thead><tr>'+
         '<th rowspan="2">Zeit</th><th colspan="4">Auswärtstätigkeit / Wohnung</th><th colspan="2">Nachtpause</th>'+
-        '<th rowspan="2">Tourablauf</th><th rowspan="2">Tachostand<br>(Beginn / Ende Tour)</th>'+
-        '<th rowspan="2">Tournummer /<br>Maut · Auflieger</th><th rowspan="2">Stapler<br>Nr</th>'+
+        '<th rowspan="2">Tourablauf</th><th rowspan="2">Tachostand</th>'+
+        '<th rowspan="2">Tournummer / Maut</th><th rowspan="2">Stapler<br>Nr</th>'+
         '<th colspan="6">Füllt Personalabteilung aus !!!!</th>'+
       '</tr><tr>'+
         '<th>Verlassen<br>Wohnung</th><th>Beginn</th><th>Ende</th><th>Ankunft<br>Wohnung</th>'+
@@ -1004,8 +1005,20 @@ function buildPrintForm(){
         '<th>h-na</th><th>h-na2</th><th>Me-h</th><th>SF-h<br>WV</th><th>SF-h<br>Di</th><th>Spes</th>'+
       '</tr></thead><tbody>'+rows+'</tbody></table>'+
     '<div class="pf-foot">'+
-      '<div class="pf-sig">Datum: <b>'+fmtDate(sun)+'</b></div>'+
-      '<div class="pf-sig">Unterschrift:'+sigImg+'</div>'+
+      '<div class="pf-sig" style="width:30%">'+
+        'Datum: <b>'+fmtDate(sun)+'</b><br><br>'+
+        'Unterschrift: '+(sigImg||'<span class="pf-line"></span>')+
+      '</div>'+
+      '<table class="pf" style="width:68%">'+
+        '<tr><td style="width:34%;font-weight:bold">Dienstfahrt mit Privat-Pkw</td>'+
+            '<th colspan="8" style="font-size:7px">Füllt Personalabteilung aus !!!!</th></tr>'+
+        '<tr><td>Multistandort………………</td>'+
+            '<th>MNS</th><th>h-na</th><th>h-na2</th><th>Me-h</th><th>SF WV</th><th>SF Di</th><th>Spes</th><th>Sta</th></tr>'+
+        '<tr><td>KFZ-Kennz.: …………&nbsp;&nbsp;Bereitschaft: …………</td>'+
+            '<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td style="font-size:6.5px">Ber Di</td></tr>'+
+        '<tr><td>Fahrt-km: …………&nbsp;&nbsp;Fahrgeld: …………</td>'+
+            '<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td style="font-size:6.5px">Zulage</td></tr>'+
+      '</table>'+
     '</div>';
 }
 
