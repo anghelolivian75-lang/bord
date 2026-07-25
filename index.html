@@ -135,49 +135,55 @@
   /* signature */
   #sigCanvas{width:100%;height:180px;background:#fff;border-radius:10px;touch-action:none;display:block}
 
-  /* ---------- PRINT: A4 Reisekosten form ---------- */
+  .verbar{display:flex;align-items:center;justify-content:space-between;gap:10px;
+          font-family:var(--mono);font-size:11px;color:var(--muted);
+          padding:10px 2px 0;border-top:1px solid var(--line);margin-top:4px}
+  .verbar button{background:var(--panel2);border:1px solid var(--line);color:var(--muted);
+                 border-radius:8px;padding:7px 12px;font-family:var(--mono);font-size:11px}
+
+  /* ---------- PRINT: A4 landscape · replică formular Reisekosten ---------- */
   #printForm{display:none}
   @media screen{ #printForm{display:none!important} }
   @media print{
-    @page{size:A4 landscape;margin:8mm}
-    body{background:#fff}
+    @page{size:A4 landscape;margin:7mm}
+    html,body{background:#fff!important;margin:0;padding:0}
     .wrap,.footer,.modal{display:none!important}
-    #printForm{display:block!important;color:#000;font-family:Arial,Helvetica,sans-serif;font-size:8.5px}
-    #printForm *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .pf-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
-    .pf-title{font-size:16px;font-weight:bold}
-    .pf-meta{font-size:9px;line-height:1.6}
-    .pf-meta b{display:inline-block;min-width:0}
-    .pf-num{border:1.5px solid #000;padding:2px 8px;font-size:12px;font-weight:bold}
-    table.pf{width:100%;border-collapse:collapse;table-layout:fixed}
-    table.pf th,table.pf td{border:1px solid #000;padding:2px 3px;vertical-align:top;overflow:hidden}
-    table.pf th{font-size:7.5px;text-align:center;background:#eee}
-    .pf-day{font-weight:bold;text-align:center;font-size:10px}
-    .pf-sub{font-size:6.5px;color:#000}
-    .pf-time{font-family:'Courier New',monospace;font-size:9px}
-    .pf-route{font-size:8px;line-height:1.35}
-    .pf-km{font-family:'Courier New',monospace;font-size:9px;text-align:right}
-    .pf-foot{display:flex;justify-content:space-between;margin-top:6px;align-items:flex-end}
-    .pf-sig{font-size:9px}
-    .pf-sig img{display:block;height:34px;margin-top:2px}
-    .pf-line{border-bottom:1px solid #000;display:inline-block;min-width:120px}
-  }
-  /* ---------- PRINT: CMR form ---------- */
-  #cmrForm{display:none}
-  @media screen{ #cmrForm{display:none!important} }
-  @media print{
-    body.pcmr #printForm{display:none!important}
-    body.pcmr #cmrForm{display:block!important;color:#000;font-family:Arial,Helvetica,sans-serif;font-size:10px}
-    .cmr-title{display:flex;justify-content:space-between;align-items:center;border:2px solid #000;padding:6px 10px;margin-bottom:0}
-    .cmr-title b{font-size:15px}
-    .cmr-title .nr{font-size:13px;font-weight:bold}
-    table.cmr{width:100%;border-collapse:collapse;table-layout:fixed}
-    table.cmr td{border:1px solid #000;padding:4px 6px;vertical-align:top;font-size:9.5px;overflow:hidden}
-    .cf-lbl{font-size:7px;color:#000;display:block;margin-bottom:2px}
-    .cf-val{white-space:pre-line;font-size:10px;line-height:1.4}
-    .cmr-sig{height:70px}
-    .cmr-sig img{height:40px;display:block;margin-top:4px}
-    .cmr-note{font-size:7px;margin-top:4px}
+    #printForm{display:block!important;color:#000;font-family:Arial,Helvetica,sans-serif}
+    #printForm *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+
+    /* antet */
+    .pf-head{display:flex;align-items:flex-start;margin-bottom:3px}
+    .pf-hl{width:26%}
+    .pf-title{font-size:15px;font-weight:bold;line-height:1.1}
+    .pf-daterange{font-size:8.5px;margin-top:2px}
+    .pf-hr{flex:1;font-size:8.5px;line-height:1.55;padding-left:4px}
+    .pf-hn{width:34px;height:20px;border:1px solid #000;font-size:11px;font-weight:bold;
+           display:flex;align-items:center;justify-content:center;margin-left:6px;flex-shrink:0}
+    .dots{border-bottom:1px dotted #000;display:inline-block;min-width:60px}
+
+    /* tabel principal */
+    table.pf{width:100%;border-collapse:collapse;table-layout:fixed;border:1.3px solid #000}
+    table.pf th,table.pf td{border:0.8px solid #000;padding:0;vertical-align:middle;overflow:hidden}
+    table.pf th{font-size:6.4px;text-align:center;font-weight:normal;line-height:1.15;padding:1px 0}
+    .pf-yellow{background:#ffff00!important}
+    .pf-day{font-weight:bold;text-align:center;font-size:9px}
+    .pf-t{font-size:8.2px;text-align:center;height:11.5px;line-height:11.5px;font-family:Arial,Helvetica,sans-serif}
+    .pf-colon{font-size:7px;text-align:center;color:#000}
+    .pf-route{font-size:7.6px;line-height:1.25;padding:1px 2px!important;text-align:left;word-wrap:break-word}
+    .pf-tacho{font-size:6px;line-height:1.1;padding:1px 2px!important;text-align:left}
+    .pf-tacho b{font-size:8.2px;font-weight:normal;float:right}
+    .pf-aufl{font-size:6px;padding:1px 2px!important;vertical-align:top!important}
+    .pf-hatch{background:repeating-linear-gradient(45deg,#c9c9c9,#c9c9c9 1px,#e8e8e8 1px,#e8e8e8 3px)!important}
+
+    /* subsol */
+    .pf-bottom{display:flex;align-items:flex-start;margin-top:5px}
+    .pf-bl{width:31%;font-size:8.5px;line-height:2.4}
+    .pf-sig-img{height:26px;display:block;margin-top:-4px}
+    .pf-bm{flex:1}
+    table.pfb{width:100%;border-collapse:collapse;border:1.3px solid #000;font-size:7.5px}
+    table.pfb td,table.pfb th{border:0.8px solid #000;padding:2px 3px;height:13px}
+    table.pfb th{font-weight:normal;font-size:6.4px;text-align:center}
+    .pf-bold{font-weight:bold}
   }
 </style>
 </head>
@@ -226,13 +232,6 @@
     <button class="act route" onclick="openRoute()"><span class="ico">⛬</span>Traseu</button>
     <button class="act stop" id="btnStop" onclick="openStop()"><span class="ico">■</span>Stop program</button>
   </div>
-  <div class="actions" style="grid-template-columns:1fr">
-    <button class="act" style="background:var(--green);flex-direction:row" onclick="quickOcr()"><span class="ico">📷</span>Încarcă screenshot traseu (din Photos)</button>
-  </div>
-  <div class="actions" style="grid-template-columns:1fr">
-    <button class="act" style="background:var(--amber);flex-direction:row" onclick="document.getElementById('cmrFileInput').click()"><span class="ico">📄</span>Dispo → eCMR (scan comandă)</button>
-    <input type="file" id="cmrFileInput" accept="image/*" style="display:none" onchange="handleCmrFile(event)">
-  </div>
 
   <!-- WEEK TABLE -->
   <div class="card">
@@ -245,6 +244,11 @@
         <tbody id="weekBody"></tbody>
       </table>
     </div>
+  </div>
+
+  <div class="verbar">
+    <span id="verLbl">v—</span>
+    <button onclick="checkUpdate()">Verifică versiune nouă</button>
   </div>
 
 </div>
@@ -269,10 +273,6 @@
     <div class="field">
       <label>Km bord la start (Tachostand)</label>
       <input type="number" id="startKm" inputmode="numeric" placeholder="ex. 815409">
-    </div>
-    <div class="field">
-      <label>Plecare de acasă — doar în prima zi (Verlassen Wohnung)</label>
-      <input type="time" id="startHome">
     </div>
     <div class="btns">
       <button onclick="closeModal('mStart')">Anulează</button>
@@ -340,10 +340,6 @@
       <label>Km bord la stop (Tachostand)</label>
       <input type="number" id="stopKm" inputmode="numeric" placeholder="ex. 815875">
     </div>
-    <div class="field">
-      <label>Sosire acasă — doar în ultima zi (Ankunft Wohnung)</label>
-      <input type="time" id="stopHome">
-    </div>
     <div class="btns">
       <button onclick="closeModal('mStop')">Anulează</button>
       <button class="go" onclick="saveStop()">Oprește · începe pauza</button>
@@ -358,12 +354,14 @@
     <div class="row2">
       <div class="field"><label>Start</label><input type="time" id="eStart"></div>
       <div class="field"><label>Stop</label><input type="time" id="eStop"></div>
-      <div class="field"><label>Plecare de acasă (Verlassen Wohnung)</label><input type="time" id="eHomeOut"></div>
-      <div class="field"><label>Sosire acasă (Ankunft Wohnung)</label><input type="time" id="eHomeIn"></div>
     </div>
     <div class="row2">
       <div class="field"><label>Km start</label><input type="number" id="eStartKm" inputmode="numeric"></div>
       <div class="field"><label>Km stop</label><input type="number" id="eStopKm" inputmode="numeric"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Plecare de acasă (doar prima zi)</label><input type="time" id="eLeaveHome"></div>
+      <div class="field"><label>Sosire acasă (doar ultima zi)</label><input type="time" id="eArriveHome"></div>
     </div>
     <div class="field"><label>Traseu</label><textarea id="eRoute"></textarea></div>
     <div class="row2">
@@ -423,47 +421,14 @@
 <!-- ============ PRINT FORM (A4) ============ -->
 <div id="printForm"></div>
 
-<!-- CMR MODAL -->
-<div class="modal" id="mCmr">
-  <div class="sheet">
-    <h3>eCMR — verifică datele scanate</h3>
-    <div id="cmrStatus" class="ocrstatus" style="display:none"></div>
-    <div class="field"><label>Sendungs-Nr</label><input id="cSend" autocomplete="off"></div>
-    <div class="field"><label>Referință / Container (LS)</label><input id="cRef" autocomplete="off"></div>
-    <div class="field"><label>1. Expeditor / Beladung (nume, stradă, PLZ oraș)</label><textarea id="cAbs" rows="3"></textarea></div>
-    <div class="field"><label>2. Destinatar / Entladung (nume, stradă, PLZ oraș)</label><textarea id="cEmp" rows="3"></textarea></div>
-    <div class="field"><label>Data livrare + interval (ab / bis)</label><input id="cDate" autocomplete="off" placeholder="20.07.2026 · 07:01–13:30"></div>
-    <div class="field"><label>Colete (ex. 24 PAL)</label><input id="cColli" autocomplete="off"></div>
-    <div class="field"><label>Greutate brută</label><input id="cKg" autocomplete="off" placeholder="20.000 kg"></div>
-    <div class="field"><label>Descriere marfă / mărci</label><input id="cGoods" autocomplete="off"></div>
-    <div class="field"><label>Observații (Anlieferung max. etc.)</label><input id="cObs" autocomplete="off"></div>
-    <div class="btns">
-      <button onclick="closeModal('mCmr')">Anulează</button>
-      <button onclick="saveCmr()">Salvează</button>
-      <button class="go" onclick="printCmr()">Printează CMR</button>
-    </div>
-  </div>
-</div>
-<div id="cmrForm"></div>
-<!-- LICENSE LOCK -->
-<div id="licLock" style="display:none;position:fixed;inset:0;z-index:200;background:var(--bg);align-items:center;justify-content:center;padding:24px">
-  <div style="max-width:420px;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px 22px;text-align:center">
-    <div style="font-size:34px;margin-bottom:10px">🔒</div>
-    <h3 style="margin:0 0 8px;font-family:var(--mono)">Perioada de probă a expirat</h3>
-    <p style="color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 18px">Ai folosit cele 7 zile de probă pe acest dispozitiv. Pentru a continua, introdu codul de activare primit de la Olivian.</p>
-    <input id="licInput" placeholder="BORD-XXXX-XXXX" autocapitalize="characters" autocomplete="off" spellcheck="false"
-      style="width:100%;box-sizing:border-box;background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:var(--mono);font-size:17px;letter-spacing:.1em;text-align:center;padding:13px;margin-bottom:10px">
-    <div id="licErr" style="color:var(--red);font-size:12px;min-height:16px;margin-bottom:8px"></div>
-    <button onclick="tryActivate()" style="width:100%;border:none;border-radius:12px;padding:15px;background:var(--green);color:#0d1117;font-family:var(--mono);font-size:15px;font-weight:700">Activează</button>
-  </div>
-</div>
-<div id="licBadge" style="display:none;text-align:center;font-family:var(--mono);font-size:11px;color:var(--amber);padding:6px 0"></div>
 <script src="./tess/tesseract.min.js"></script>
 <script>
 "use strict";
 const DAYS = ["Mo","Di","Mi","Do","Fr","Sa","So"];
 const DAYS_FULL = {Mo:"Luni",Di:"Marți",Mi:"Miercuri",Do:"Joi",Fr:"Vineri",Sa:"Sâmbătă",So:"Duminică"};
 const STORE = "reisekosten_bord_v1";
+const APP_VERSION = "1.2";
+const DATA_VERSION = 2;
 
 let state = load();
 let viewMonday = mondayOf(new Date());
@@ -471,9 +436,45 @@ let editingDay = null;
 let editSeg = 'auto';
 
 /* ---------- storage ---------- */
+function freshState(){
+  return { dataVersion:DATA_VERSION,
+    driver:{name:"Anghel Constantin Olivian",pnr:"4232",veh:"AA BR 535",std:"Aalen",kunde:"",docnr:""},
+    plannedRest:"normal", weeks:{} };
+}
+
+/* migrare: datele vechi NU se pierd niciodată la update */
+function migrate(s){
+  if(!s) return freshState();
+  const v = s.dataVersion || 1;
+  if(v < 2){
+    // v1 -> v2: adăugat leaveHome/arriveHome per zi; nimic de convertit, doar marcat
+    Object.values(s.weeks||{}).forEach(w=>{
+      Object.values(w.days||{}).forEach(d=>{
+        if(d.leaveHome===undefined) d.leaveHome=null;
+        if(d.arriveHome===undefined) d.arriveHome=null;
+      });
+    });
+    s.dataVersion = 2;
+  }
+  if(!s.driver) s.driver = freshState().driver;
+  if(!s.weeks)  s.weeks  = {};
+  if(!s.plannedRest) s.plannedRest = "normal";
+  return s;
+}
+
 function load(){
-  try{ const s = JSON.parse(localStorage.getItem(STORE)); if(s) return s; }catch(e){}
-  return { driver:{name:"Anghel Constantin Olivian",pnr:"4232",veh:"AA BR 535",std:"Aalen",kunde:"",docnr:""}, plannedRest:"normal", weeks:{} };
+  try{
+    const raw = localStorage.getItem(STORE);
+    if(raw){ const s = migrate(JSON.parse(raw)); return s; }
+  }catch(e){ console.warn("load failed, pornesc gol:", e); }
+  return freshState();
+}
+
+/* verificare versiune nouă — reîncarcă ocolind cache-ul */
+function checkUpdate(){
+  const u = new URL(window.location.href);
+  u.searchParams.set('v', Date.now());
+  window.location.replace(u.toString());
 }
 function save(){ try{ localStorage.setItem(STORE, JSON.stringify(state)); }catch(e){ alert("Nu am putut salva (stocare browser blocată). Folosește Backup."); } }
 
@@ -529,6 +530,7 @@ function render(){
 
   renderLive();
   renderTable();
+  const vl=document.getElementById('verLbl'); if(vl) vl.textContent='DigiSpesen v'+APP_VERSION;
   save();
 }
 
@@ -647,7 +649,6 @@ function saveStart(){
   const tk=todayKey(); const d=dayData(tk);
   d.start=document.getElementById('startTime').value;
   d.startKm=document.getElementById('startKm').value;
-  d.homeOut=document.getElementById('startHome').value||d.homeOut||'';
   d.stop=null;
   closeModal('mStart'); render();
 }
@@ -663,11 +664,6 @@ function frequentCities(){
   const used=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
   const out=[...used]; SEED_CITIES.forEach(c=>{ if(!out.includes(c)) out.push(c); });
   return out.slice(0,14);
-}
-function quickOcr(){
-  const tk=todayKey(); if(!tk){ alert("Revino la săptămâna curentă."); return; }
-  openRoute();
-  document.getElementById('ocrFileInput').click();
 }
 function openRoute(){
   const tk=todayKey(); if(!tk){ alert("Revino la săptămâna curentă."); return; }
@@ -702,8 +698,6 @@ function addCityFromInput(){
 }
 function clearRoute(){ routeBuf=[]; renderRouteChips(); }
 function saveRoute(){
-  const inp=document.getElementById('cityInput');
-  if(inp && inp.value.trim()){ routeBuf.push(inp.value.trim()); inp.value=""; }
   const tk=todayKey(); const d=dayData(tk);
   d.routeCities=routeBuf.slice(); d.route=joinRoute(routeBuf);
   closeModal('mRoute'); render();
@@ -768,7 +762,7 @@ function getOcrWorker(){
   if(!ocrWorkerPromise){
     ocrWorkerPromise = Tesseract.createWorker('deu+eng', 1, {
       workerPath: TESS_BASE + 'worker.min.js',
-      corePath: TESS_BASE + 'tesseract-core-lstm.wasm.js',
+      corePath: TESS_BASE,
       langPath: TESS_BASE,
       cacheMethod: 'none',
       logger: ()=>{}
@@ -832,11 +826,6 @@ function confirmOcrCities(){
   ocrDetected.filter(c=>c.checked && c.text.trim()).forEach(c=>routeBuf.push(c.text.trim()));
   closeModal('mOcrConfirm');
   renderFreqPills(); renderRouteChips();
-  // Persist immediately so the imported route is saved even if the user forgets to press Salvează
-  const tk=todayKey();
-  if(tk){ const d=dayData(tk); d.routeCities=routeBuf.slice(); d.route=joinRoute(routeBuf); save(); }
-  const st=document.getElementById('ocrStatus');
-  if(st){ st.style.display='block'; st.className='ocrstatus'; st.textContent='Traseu salvat ('+routeBuf.length+' orașe). Poți adăuga altele sau apăsa Salvează.'; }
 }
 function openStop(){
   const tk=todayKey(); if(!tk){ alert("Revino la săptămâna curentă."); return; }
@@ -850,7 +839,6 @@ function saveStop(){
   const tk=todayKey(); const d=dayData(tk);
   d.stop=document.getElementById('stopTime').value;
   d.stopKm=document.getElementById('stopKm').value;
-  d.homeIn=document.getElementById('stopHome').value||d.homeIn||'';
   closeModal('mStop'); render();
 }
 
@@ -860,9 +848,9 @@ function openEdit(key){
   document.getElementById('editTitle').textContent="Editează "+DAYS_FULL[key];
   document.getElementById('eStart').value=d.start||'';
   document.getElementById('eStop').value=d.stop||'';
-  document.getElementById('eHomeOut').value=d.homeOut||'';
-  document.getElementById('eHomeIn').value=d.homeIn||'';
   document.getElementById('eStartKm').value=d.startKm||'';
+  document.getElementById('eLeaveHome').value=d.leaveHome||'';
+  document.getElementById('eArriveHome').value=d.arriveHome||'';
   document.getElementById('eStopKm').value=d.stopKm||'';
   document.getElementById('eRoute').value=d.route||'';
   document.getElementById('eAufl').value=d.aufl||'';
@@ -877,9 +865,9 @@ function saveEdit(){
   const d=dayData(editingDay);
   d.start=document.getElementById('eStart').value||null;
   d.stop=document.getElementById('eStop').value||null;
-  d.homeOut=document.getElementById('eHomeOut').value||'';
-  d.homeIn=document.getElementById('eHomeIn').value||'';
   d.startKm=document.getElementById('eStartKm').value;
+  d.leaveHome=document.getElementById('eLeaveHome').value||null;
+  d.arriveHome=document.getElementById('eArriveHome').value||null;
   d.stopKm=document.getElementById('eStopKm').value;
   d.route=document.getElementById('eRoute').value.trim();
   d.routeCities=parseRoute(d.route);
@@ -957,84 +945,163 @@ function saveSig(){
   setTimeout(()=>window.print(),300);
 }
 
-/* ---------- print form ---------- */
+/* ---------- print form: replică formular Reisekosten ---------- */
 function printForm(){
-  buildPrintForm();
-  // offer signature first if none
   if(!state.sig){
-    if(confirm("Vrei să adaugi semnătura (Apple Pencil) înainte de print?")){ openSig(); return; }
+    if(confirm("Vrei să adaugi semnătura înainte de print?")){ openSig(); return; }
   }
-  setTimeout(()=>window.print(),200);
+  buildPrintForm();
+  setTimeout(()=>{ shrinkRoutes(); setTimeout(()=>window.print(),120); },80);
 }
-function buildPrintForm(){
-  const dr=state.driver; const w=curWeek();
-  const mon=viewMonday; const sun=dateForDay(mon,6);
-  let rows="";
-  const order=["So0","Mo","Di","Mi","Do","Fr","Sa","So"]; // form shows So(prev) then Mo..Sa then So
-  // We render Mo..So of THIS week + a leading empty So
-  const seq=[{k:null,lbl:"So"}, {k:"Mo",lbl:"Mo"},{k:"Di",lbl:"Di"},{k:"Mi",lbl:"Mi"},{k:"Do",lbl:"Do"},{k:"Fr",lbl:"Fr"},{k:"Sa",lbl:"Sa"},{k:"So",lbl:"So"}];
-  seq.forEach((s,ix)=>{
-    const d=s.k?(w.days[s.k]||{}):{};
-    const idx=DAYS.indexOf(s.k);
-    // Nachtpause: von = this stop, bis = next start
-    let npVon="",npBis="";
-    if(s.k){ if(d.stop) npVon=d.stop; const nx=w.days[DAYS[idx+1]]; if(nx&&nx.start) npBis=nx.start; }
-    const gray=(ix===0)?' style="background:#c8c8c8"':'';
-    rows+=
-      '<tr>'+
-        '<td class="pf-day">'+s.lbl+'</td>'+
-        '<td class="pf-time"'+gray+'>'+(d.homeOut||'')+'</td>'+  /* Verlassen Wohnung */
-        '<td class="pf-time"'+gray+'>'+(d.start||'')+'</td>'+  /* Beginn = ora start */
-        '<td class="pf-time"'+gray+'>'+(d.stop||'')+'</td>'+   /* Ende = ora stop */
-        '<td class="pf-time"'+gray+'>'+(d.homeIn||'')+'</td>'+ /* Ankunft Wohnung */
-        '<td class="pf-time"'+gray+'>'+npVon+'</td>'+  /* Nachtpause von */
-        '<td class="pf-time"'+gray+'>'+npBis+'</td>'+  /* Nachtpause bis */
-        '<td class="pf-route"'+gray+'>'+(d.route?esc(d.route):'')+'</td>'+
-        '<td class="pf-km"><span class="pf-sub">Beginn Tour</span> '+(d.startKm?esc(d.startKm):'')+'<br><span class="pf-sub">Ende Tour</span> '+(d.stopKm?esc(d.stopKm):'')+'</td>'+
-        '<td>'+(d.tour?esc(d.tour):'')+'<br><span class="pf-sub">Auflieger:</span> '+(d.aufl?esc(d.aufl):'')+'</td>'+
-        '<td></td>'+           /* Stapler Nr */
-        '<td colspan="6"></td>'+ /* Personalabteilung */
-      '</tr>';
-  });
 
-  const sigImg=state.sig?('<img src="'+state.sig+'">'):'';
+/* micșorează automat fontul traseului până încape perfect în celulă */
+function shrinkRoutes(){
+  document.querySelectorAll('#printForm .pf-route').forEach(cell=>{
+    let size=7.6;
+    cell.style.fontSize=size+'px';
+    let guard=0;
+    while(cell.scrollHeight>cell.clientHeight+1 && size>3.4 && guard<40){
+      size-=0.25; cell.style.fontSize=size+'px'; guard++;
+    }
+  });
+}
+
+function buildPrintForm(){
+  const dr=state.driver, w=curWeek();
+  const mon=viewMonday, sat=dateForDay(mon,5);
+
+  /* prima și ultima zi lucrătoare din săptămână */
+  let firstIdx=-1, lastIdx=-1;
+  for(let i=0;i<7;i++){ const d=w.days[DAYS[i]]; if(d&&d.start){ if(firstIdx<0) firstIdx=i; } }
+  for(let i=6;i>=0;i--){ const d=w.days[DAYS[i]]; if(d&&d.stop){ lastIdx=i; break; } }
+
+  const c=(v)=>v?('<div class="pf-t">'+v+'</div>'):'<div class="pf-colon">:</div>';
+
+  /* rândul So de sus (hașurat, ca în original) */
+  let rows='<tr>'+
+      '<td class="pf-day">So</td>'+
+      '<td><div class="pf-colon">:</div></td>'+
+      '<td><div class="pf-colon">:</div></td>'+
+      '<td class="pf-hatch" colspan="5"></td>'+
+      '<td class="pf-tacho">Beginn Tour<br>Ende Tour</td>'+
+      '<td class="pf-aufl">Auflieger:</td>'+
+      '<td></td><td></td><td></td><td></td><td></td><td></td><td></td>'+
+    '</tr>';
+
+  for(let i=0;i<7;i++){
+    const key=DAYS[i], d=w.days[key]||{};
+    const isFirst=(i===firstIdx), isLast=(i===lastIdx);
+
+    /* Verlassen Wohnung + Auswärtstätigkeit Beginn: doar prima zi
+       Auswärtstätigkeit Ende + Ankunft Wohnung: doar ultima zi
+       Nachtpause bis (rând 1) = startul zilei, dacă a fost noapte în camion înainte
+       Nachtpause von (rând 2) = stopul zilei, dacă urmează noapte în camion */
+    const verlassen = isFirst ? (d.leaveHome||'') : '';
+    const beginn    = isFirst ? (d.start||'')     : '';
+    const ende      = isLast  ? (d.stop||'')      : '';
+    const ankunft   = isLast  ? (d.arriveHome||''): '';
+    const npBis = (firstIdx>=0 && i>firstIdx && d.start) ? d.start : '';
+    const npVon = (lastIdx>=0 && i<lastIdx && d.stop)    ? d.stop  : '';
+
+    rows+='<tr>'+
+      '<td class="pf-day" rowspan="2">'+key+'</td>'+
+      '<td>'+c(verlassen)+'</td>'+
+      '<td>'+c('')+'</td>'+
+      '<td>'+c('')+'</td>'+
+      '<td>'+c('')+'</td>'+
+      '<td>'+c('')+'</td>'+
+      '<td>'+c(npBis)+'</td>'+
+      '<td class="pf-route" rowspan="2">'+(d.route?esc(d.route):'')+'</td>'+
+      '<td class="pf-tacho">Beginn Tour <b>'+(d.startKm||'')+'</b></td>'+
+      '<td class="pf-aufl" rowspan="2">Auflieger: '+(d.aufl?esc(d.aufl):'')+'</td>'+
+      '<td rowspan="2"></td>'+
+      '<td rowspan="2"></td><td rowspan="2"></td><td rowspan="2"></td>'+
+      '<td rowspan="2"></td><td rowspan="2"></td><td rowspan="2"></td>'+
+    '</tr>'+
+    '<tr>'+
+      '<td>'+c('')+'</td>'+
+      '<td>'+c(beginn)+'</td>'+
+      '<td>'+c(ende)+'</td>'+
+      '<td>'+c(ankunft)+'</td>'+
+      '<td>'+c(npVon)+'</td>'+
+      '<td>'+c('')+'</td>'+
+      '<td class="pf-tacho">Ende Tour <b>'+(d.stopKm||'')+'</b></td>'+
+    '</tr>';
+  }
+
+  const sigImg=state.sig?('<img class="pf-sig-img" src="'+state.sig+'">'):'';
+  const wk=isoWeek(mon);
+
   document.getElementById('printForm').innerHTML=
-    '<div class="pf-top">'+
-      '<div><div class="pf-title">Reisekosten</div>'+
-        '<div class="pf-meta">Datum von <b>'+fmtDate(mon)+'</b> bis <b>'+fmtDate(sun)+'</b></div></div>'+
-      '<div class="pf-meta" style="text-align:left">'+
-        'Kunde (nur bei Werkverkehreinsatz): <b>'+esc(dr.kunde||'')+'</b><br>'+
-        'PersonalNr.: <b>'+esc(dr.pnr||'')+'</b>&nbsp;&nbsp; Vor- und Nachname: <b>'+esc(dr.name||'')+'</b><br>'+
-        'Standort: <b>'+esc(dr.std||'')+'</b>&nbsp;&nbsp; Fahrzeug: <b>'+esc(dr.veh||'')+'</b>'+
+    '<div class="pf-head">'+
+      '<div class="pf-hl">'+
+        '<div class="pf-title">Reisekosten</div>'+
+        '<div class="pf-daterange">Datum von <b>'+fmtDate(mon)+'</b> bis <b>'+fmtDate(sat)+'</b></div>'+
       '</div>'+
-      '<div class="pf-num">'+esc(dr.docnr||'')+'</div>'+
+      '<div class="pf-hr">'+
+        'Kunde (nur bei Werkverkehreinsatz): <span class="dots" style="min-width:230px">'+esc(dr.kunde||'')+'</span><br>'+
+        'PersonalNr.: <b>'+esc(dr.pnr||'')+'</b>&nbsp;&nbsp;Vor- und Nachname: <b>'+esc(dr.name||'')+'</b><br>'+
+        'Standort: <b>'+esc(dr.std||'')+'</b>&nbsp;&nbsp;Fahrzeug: <b>'+esc(dr.veh||'')+'</b>'+
+      '</div>'+
+      '<div class="pf-hn">'+wk+'</div>'+
     '</div>'+
+
     '<table class="pf">'+
-      '<thead><tr>'+
-        '<th rowspan="2">Zeit</th><th colspan="4">Auswärtstätigkeit / Wohnung</th><th colspan="2">Nachtpause</th>'+
-        '<th rowspan="2">Tourablauf</th><th rowspan="2">Tachostand</th>'+
-        '<th rowspan="2">Tournummer / Maut</th><th rowspan="2">Stapler<br>Nr</th>'+
-        '<th colspan="6">Füllt Personalabteilung aus !!!!</th>'+
-      '</tr><tr>'+
-        '<th>Verlassen<br>Wohnung</th><th>Beginn</th><th>Ende</th><th>Ankunft<br>Wohnung</th>'+
-        '<th>von</th><th>bis</th>'+
-        '<th>h-na</th><th>h-na2</th><th>Me-h</th><th>SF-h<br>WV</th><th>SF-h<br>Di</th><th>Spes</th>'+
-      '</tr></thead><tbody>'+rows+'</tbody></table>'+
-    '<div class="pf-foot">'+
-      '<div class="pf-sig" style="width:30%">'+
-        'Datum: <b>'+fmtDate(sun)+'</b><br><br>'+
-        'Unterschrift: '+(sigImg||'<span class="pf-line"></span>')+
+      '<colgroup>'+
+        '<col style="width:2.8%"><col style="width:4.1%"><col style="width:3.9%"><col style="width:3.7%">'+
+        '<col style="width:3.9%"><col style="width:3.7%"><col style="width:3.8%"><col style="width:28.9%">'+
+        '<col style="width:8.7%"><col style="width:10.9%"><col style="width:3.6%">'+
+        '<col style="width:3.3%"><col style="width:3.6%"><col style="width:3.6%">'+
+        '<col style="width:3.8%"><col style="width:3.8%"><col style="width:4.0%">'+
+      '</colgroup>'+
+      '<thead>'+
+      '<tr>'+
+        '<th rowspan="2">Zeit</th>'+
+        '<th>Verlassen</th>'+
+        '<th colspan="2">Auswärtstätigkeit</th>'+
+        '<th>Ankunft</th>'+
+        '<th colspan="2">Nachtpause</th>'+
+        '<th rowspan="2">Tourablauf</th>'+
+        '<th rowspan="2">Tachostand</th>'+
+        '<th rowspan="2">Tournummer / Maut</th>'+
+        '<th rowspan="2">Stapler<br>Nr</th>'+
+        '<th class="pf-yellow" colspan="6">Füllt Personalabteilung aus !!!!</th>'+
+      '</tr>'+
+      '<tr>'+
+        '<th>Wohnung</th><th>Beginn</th><th>Ende</th><th>Wohnung</th><th>von</th><th>bis</th>'+
+        '<th class="pf-yellow">h-na</th><th class="pf-yellow">h-na2</th><th class="pf-yellow">Me-h</th>'+
+        '<th class="pf-yellow">SF-h<br>WV</th><th class="pf-yellow">SF-h<br>Di</th><th class="pf-yellow">Spes</th>'+
+      '</tr>'+
+      '</thead><tbody>'+rows+'</tbody>'+
+    '</table>'+
+
+    '<div class="pf-bottom">'+
+      '<div class="pf-bl">'+
+        'Datum: <b>'+fmtDate(sat)+'</b><br>'+
+        'Unterschrift: '+sigImg+
       '</div>'+
-      '<table class="pf" style="width:68%">'+
-        '<tr><td style="width:34%;font-weight:bold">Dienstfahrt mit Privat-Pkw</td>'+
-            '<th colspan="8" style="font-size:7px">Füllt Personalabteilung aus !!!!</th></tr>'+
-        '<tr><td>Multistandort………………</td>'+
-            '<th>MNS</th><th>h-na</th><th>h-na2</th><th>Me-h</th><th>SF WV</th><th>SF Di</th><th>Spes</th><th>Sta</th></tr>'+
-        '<tr><td>KFZ-Kennz.: …………&nbsp;&nbsp;Bereitschaft: …………</td>'+
-            '<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td style="font-size:6.5px">Ber Di</td></tr>'+
-        '<tr><td>Fahrt-km: …………&nbsp;&nbsp;Fahrgeld: …………</td>'+
-            '<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td style="font-size:6.5px">Zulage</td></tr>'+
-      '</table>'+
+      '<div class="pf-bm">'+
+        '<table class="pfb">'+
+          '<tr>'+
+            '<td class="pf-bold" style="width:26%">Dienstfahrt mit Privat-Pkw</td>'+
+            '<td style="width:26%">Multistandort<span class="dots"></span></td>'+
+            '<th class="pf-yellow">MNS</th><th class="pf-yellow">h-na</th><th class="pf-yellow">h-na2</th>'+
+            '<th class="pf-yellow">Me-h</th><th class="pf-yellow">SF WV</th><th class="pf-yellow">SF Di</th>'+
+            '<th class="pf-yellow">Spes</th>'+
+          '</tr>'+
+          '<tr>'+
+            '<td>KFZ-Kennz: <span class="dots"></span></td>'+
+            '<td>Bereitschaft: <span class="dots"></span></td>'+
+            '<td></td><td></td><td></td><td></td><td></td><td></td><td></td>'+
+          '</tr>'+
+          '<tr>'+
+            '<td>Fahrt-km: <span class="dots"></span></td>'+
+            '<td>Fahrgeld: <span class="dots"></span></td>'+
+            '<th>Sta</th><td></td><td></td><td></td><td></td>'+
+            '<th>Ber Di</th><th>Zulage</th>'+
+          '</tr>'+
+        '</table>'+
+      '</div>'+
     '</div>';
 }
 
@@ -1047,174 +1114,7 @@ document.getElementById('cityInput').addEventListener('keydown',e=>{ if(e.key===
 /* live tick */
 setInterval(()=>{ if(todayKey()) renderLive(); },30000);
 
-/* ---------- Dispo -> eCMR ---------- */
-function parseDispo(t){
-  const r={send:'',ref:'',abs:'',emp:'',date:'',colli:'',kg:'',goods:'',obs:''};
-  let m=t.match(/Sendungs[-\s]?Nr\.?:?\s*(\d{5,10})/i); if(m) r.send=m[1];
-  m=t.match(/\b([A-Z]{4}U?\d{6,7})\b/); if(m) r.ref=m[1];
-  m=t.match(/(\d{2}\.\d{2}\.\d{4})/); const dt=m?m[1]:'';
-  const ab=t.match(/ab:?\s*(\d{1,2}:\d{2})/i), bis=t.match(/bis:?\s*(\d{1,2}:\d{2})/i);
-  r.date=dt+(ab?(' · '+ab[1]):'')+(bis?('–'+bis[1]):'');
-  m=t.match(/(\d{1,3}[.,]?\d{0,2})\s*PAL/i); if(m) r.colli=m[1].replace(',00','')+' PAL';
-  m=t.match(/(\d{1,3}(?:[.,]\d{3})+|\d{4,6})\s*kg/i); if(m) r.kg=m[1]+' kg';
-  const plz=[...t.matchAll(/D[-\s]?(\d{5})\s+([A-Za-zÄÖÜäöüß][A-Za-zÄÖÜäöüß.\-]*(?:\s[A-Za-zÄÖÜäöüß][A-Za-zÄÖÜäöüß.\-]+)*)/g)];
-  if(plz[0]) r.abs='D-'+plz[0][1]+' '+plz[0][2].trim();
-  if(plz[1]) r.emp='D-'+plz[1][1]+' '+plz[1][2].trim();
-  m=t.match(/Anlieferung[^\n]{0,50}/i); if(m) r.obs=m[0].trim();
-  if(r.ref) r.goods=r.ref;
-  return r;
-}
-async function handleCmrFile(evt){
-  const file=evt.target.files[0]; evt.target.value=''; if(!file) return;
-  openCmrModal(null);
-  const st=document.getElementById('cmrStatus');
-  st.style.display='block'; st.className='ocrstatus'; st.textContent='Se scanează comanda… (poate dura la prima folosire)';
-  try{
-    const worker=await getOcrWorker();
-    const {data}=await worker.recognize(file);
-    const p=parseDispo(data.text||'');
-    fillCmrFields(p);
-    st.textContent='Scanat. Verifică și corectează câmpurile — mai ales adresele (completează numele firmei și strada).';
-  }catch(err){
-    st.className='ocrstatus err';
-    st.textContent='Scanarea a eșuat ('+(err&&err.message?err.message:'eroare')+'). Completează manual.';
-  }
-}
-function fillCmrFields(p){
-  document.getElementById('cSend').value=p.send||'';
-  document.getElementById('cRef').value=p.ref||'';
-  document.getElementById('cAbs').value=p.abs||'';
-  document.getElementById('cEmp').value=p.emp||'';
-  document.getElementById('cDate').value=p.date||'';
-  document.getElementById('cColli').value=p.colli||'';
-  document.getElementById('cKg').value=p.kg||'';
-  document.getElementById('cGoods').value=p.goods||'';
-  document.getElementById('cObs').value=p.obs||'';
-}
-function openCmrModal(data){
-  fillCmrFields(data||state.lastCmr||{});
-  document.getElementById('cmrStatus').style.display='none';
-  showModal('mCmr');
-}
-function readCmrFields(){
-  return {
-    send:document.getElementById('cSend').value.trim(),
-    ref:document.getElementById('cRef').value.trim(),
-    abs:document.getElementById('cAbs').value.trim(),
-    emp:document.getElementById('cEmp').value.trim(),
-    date:document.getElementById('cDate').value.trim(),
-    colli:document.getElementById('cColli').value.trim(),
-    kg:document.getElementById('cKg').value.trim(),
-    goods:document.getElementById('cGoods').value.trim(),
-    obs:document.getElementById('cObs').value.trim()
-  };
-}
-function saveCmr(){
-  const c=readCmrFields();
-  state.lastCmr=c;
-  const tk=todayKey(); if(tk){ dayData(tk).cmr=c; }
-  save();
-  const st=document.getElementById('cmrStatus');
-  st.style.display='block'; st.className='ocrstatus'; st.textContent='eCMR salvat.';
-}
-function buildCmrForm(c){
-  const dr=state.driver;
-  const sig=state.sig?('<img src="'+state.sig+'">'):'';
-  const today=fmtDate(new Date());
-  document.getElementById('cmrForm').innerHTML=
-    '<div class="cmr-title"><b>FRACHTBRIEF · SCRISOARE DE TRANSPORT (CMR)</b><span class="nr">Nr. '+esc(c.send||'—')+'</span></div>'+
-    '<table class="cmr">'+
-    '<tr><td style="width:50%;height:64px"><span class="cf-lbl">1. Absender / Expeditor (Beladung)</span><div class="cf-val">'+esc(c.abs)+'</div></td>'+
-        '<td style="width:50%"><span class="cf-lbl">16. Frachtführer / Transportator</span><div class="cf-val">'+esc(dr.name||'')+'\nPersonalNr. '+esc(dr.pnr||'')+'\nFahrzeug: '+esc(dr.veh||'')+'\nStandort: '+esc(dr.std||'')+'</div></td></tr>'+
-    '<tr><td style="height:64px"><span class="cf-lbl">2. Empfänger / Destinatar (Entladung)</span><div class="cf-val">'+esc(c.emp)+'</div></td>'+
-        '<td><span class="cf-lbl">17. Nachfolgende Frachtführer / Transportatori succesivi</span><div class="cf-val"></div></td></tr>'+
-    '<tr><td><span class="cf-lbl">3. Auslieferungsort / Loc livrare · Datum</span><div class="cf-val">'+esc(c.date)+'</div></td>'+
-        '<td><span class="cf-lbl">18. Vorbehalte / Rezerve și observații</span><div class="cf-val">'+esc(c.obs)+'</div></td></tr>'+
-    '<tr><td><span class="cf-lbl">4. Übernahme / Loc și dată preluare</span><div class="cf-val">'+esc((c.abs||'').split('\n').pop()||'')+' · '+today+'</div></td>'+
-        '<td><span class="cf-lbl">5. Beigefügte Dokumente / Documente anexate</span><div class="cf-val">Sendungs-Nr. '+esc(c.send)+(c.ref?('\nRef./LS: '+esc(c.ref)):'')+'</div></td></tr>'+
-    '</table>'+
-    '<table class="cmr" style="border-top:none">'+
-    '<tr><td style="width:25%"><span class="cf-lbl">6. Kennzeichen u. Nummern / Mărci</span><div class="cf-val">'+esc(c.ref)+'</div></td>'+
-        '<td style="width:15%"><span class="cf-lbl">7. Anzahl der Packstücke / Nr. colete</span><div class="cf-val">'+esc(c.colli)+'</div></td>'+
-        '<td style="width:15%"><span class="cf-lbl">8. Art der Verpackung / Ambalaj</span><div class="cf-val">'+(c.colli?'Paletten':'')+'</div></td>'+
-        '<td style="width:30%"><span class="cf-lbl">9. Bezeichnung des Gutes / Natura mărfii</span><div class="cf-val">'+esc(c.goods)+'</div></td>'+
-        '<td style="width:15%"><span class="cf-lbl">11. Bruttogewicht / Greutate brută</span><div class="cf-val">'+esc(c.kg)+'</div></td></tr>'+
-    '</table>'+
-    '<table class="cmr" style="border-top:none">'+
-    '<tr><td style="width:33%"><span class="cf-lbl">21. Ausgefertigt in / Întocmit la · am / data</span><div class="cf-val">'+esc(dr.std||'')+' · '+today+'</div></td>'+
-        '<td style="width:33%" class="cmr-sig"><span class="cf-lbl">22. Unterschrift Absender / Semnătură expeditor</span></td>'+
-        '<td style="width:34%" class="cmr-sig"><span class="cf-lbl">23. Unterschrift Frachtführer / Semnătură transportator</span>'+sig+'</td></tr>'+
-    '<tr><td colspan="2"><span class="cf-lbl">24. Gut empfangen / Marfa primită — Datum · Unterschrift Empfänger</span><div style="height:40px"></div></td>'+
-        '<td><span class="cf-lbl">Hinweis</span><div class="cmr-note">Document generat din aplicația Program de bord pe baza comenzii Dispo. Pentru eCMR cu valoare legală, datele se transmit către o platformă certificată eFTI.</div></td></tr>'+
-    '</table>';
-}
-function printCmr(){
-  const c=readCmrFields();
-  state.lastCmr=c; const tk=todayKey(); if(tk){ dayData(tk).cmr=c; } save();
-  buildCmrForm(c);
-  document.body.classList.add('pcmr');
-  let stl=document.getElementById('cmrPageStyle');
-  if(!stl){ stl=document.createElement('style'); stl.id='cmrPageStyle'; document.head.appendChild(stl); }
-  stl.textContent='@media print{@page{size:A4 portrait;margin:10mm}}';
-  const cleanup=()=>{ document.body.classList.remove('pcmr'); stl.textContent=''; window.removeEventListener('afterprint',cleanup); };
-  window.addEventListener('afterprint',cleanup);
-  setTimeout(()=>window.print(),200);
-}
-
-/* ---------- license: 7-day trial + activation code ---------- */
-const LIC_KEY='bord_lic_v1', TRIAL_DAYS=7;
-const LIC_HASHES=[
-'85100f627ab00ae4aff65fb16b069bcdf643e4c4c063e2b26932dbf7817bfe19',
-'b073a0d6b0faa7747a8bf58e64002a37eee493786a36c8f19b60e698a80ab378',
-'1ae074468300f7d122832081ce3f032266e08555a404a8979c3a614c27483884',
-'536956d29510dcb29ed4e68a07b3f2ae88987a93c86d3aa9f467e3676962941c',
-'c0f5a4a84913db2c6a946d1af67cc1fe7299e2b4f67ebe476353177df4f46d05',
-'ae012af606d6728256a01bc23c7d20cea1598eb8816906a58a7b39216a564fe7',
-'f0a8bd3eee718babeb823af9b020abc51dde7672ff7eade0767f67b642f9815c',
-'789e0991159fa7e059ddf65f2f9dcac2998f7cb7bb4bd676ad03e7f924c96488',
-'5b344121c067a3b5b2f04926179beb985f35c4d5af820142ef80bc29a8c6cccb',
-'6e07e40037d715175aa6764296e62b692fcff5e96834f310f12071d022a611a8'
-];
-function licLoad(){ try{ return JSON.parse(localStorage.getItem(LIC_KEY))||{}; }catch(e){ return {}; } }
-function licSave(o){ try{ localStorage.setItem(LIC_KEY,JSON.stringify(o)); }catch(e){} }
-async function sha256hex(s){
-  const b=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
-  return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
-}
-function checkLicense(){
-  let l=licLoad();
-  if(l.ok) return;
-  if(!l.first){ l.first=Date.now(); licSave(l); }
-  const daysUsed=Math.floor((Date.now()-l.first)/86400000);
-  const left=TRIAL_DAYS-daysUsed;
-  if(left<=0){
-    document.getElementById('licLock').style.display='flex';
-  }else{
-    const b=document.getElementById('licBadge');
-    b.style.display='block';
-    b.textContent='Probă: '+left+(left===1?' zi rămasă':' zile rămase')+' · cere codul de activare de la Olivian';
-    document.querySelector('.wrap')?.prepend(b);
-  }
-}
-async function tryActivate(){
-  const raw=document.getElementById('licInput').value||'';
-  const norm=raw.replace(/[^a-z0-9]/gi,'').toUpperCase();
-  const err=document.getElementById('licErr');
-  if(!norm){ err.textContent='Introdu codul.'; return; }
-  const h=await sha256hex(norm);
-  if(LIC_HASHES.includes(h)){
-    const l=licLoad(); l.ok=true; l.code=h.slice(0,8); licSave(l);
-    document.getElementById('licLock').style.display='none';
-    const b=document.getElementById('licBadge'); if(b) b.style.display='none';
-    alert('Activat! Aplicația este deblocată pe acest dispozitiv.');
-  }else{
-    err.textContent='Cod invalid. Verifică și încearcă din nou.';
-  }
-}
-document.getElementById('licInput').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); tryActivate(); } });
-
 render();
-checkLicense();
 </script>
 </body>
 </html>
