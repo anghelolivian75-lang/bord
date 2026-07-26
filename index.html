@@ -141,79 +141,79 @@
   .verbar button{background:var(--panel2);border:1px solid var(--line);color:var(--muted);
                  border-radius:8px;padding:7px 12px;font-family:var(--mono);font-size:11px}
 
-  /* ---------- PRINT: A4 landscape · replica 1:1 a formularului original ---------- */
-  /* Masurat din Formular_Reisekostenabrechnung_Stand_20_11_2017.pdf
-     Pagina 841.68 x 595.20 pt (A4 landscape). Tabel: x 2.2 -> 811.4 pt, y 58.9 -> 485.8 pt */
+  /* ---------- PRINT: replica 1:1 a formularului original ----------
+     Masurat din PDF-ul original: pagina 841.68 x 595.2 pt (A4 landscape).
+     Toate pozitiile sunt EXACT cele din original, in puncte tipografice. ---------- */
   #printForm{display:none}
   @media screen{ #printForm{display:none!important} }
   @media print{
-    /* iOS Safari NU emite pagini landscape. Deci: o singura cutie de exact
-       210 x 297 mm (o pagina, overflow ascuns => imposibil sa apara pagina 2),
-       iar formularul de 285 x 201 mm e rotit 90 grade inauntru.
-       Pe hartie iese identic cu originalul A4 landscape. */
-    @page{size:210mm 297mm;margin:0}
-    html,body{background:#fff!important;margin:0!important;padding:0!important;
-              width:210mm!important;height:297mm!important;overflow:hidden!important}
+    @page{ size:841.68pt 595.2pt; margin:0; }
+    html,body{background:#fff!important;margin:0!important;padding:0!important}
     .wrap,.footer,.modal{display:none!important}
-    #printForm{display:block!important;position:relative;width:210mm;height:297mm;
-               overflow:hidden;page-break-after:avoid;break-after:avoid;
+
+    #printForm{display:block!important;position:relative;
+               width:841.68pt;height:595.2pt;overflow:hidden;
+               page-break-after:avoid;break-after:avoid;
                page-break-inside:avoid;break-inside:avoid}
-    .pf-page{position:absolute;top:0;left:0;width:285mm;color:#000;
-             font-family:Arial,Helvetica,sans-serif;
-             transform-origin:0 0;transform:translate(205.4mm,6mm) rotate(90deg)}
     #printForm *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;
-                 box-sizing:border-box;text-transform:none!important;letter-spacing:normal!important;
-                 color:#000!important;font-family:Arial,Helvetica,sans-serif!important}
+                 box-sizing:border-box;color:#000!important;
+                 font-family:Arial,Helvetica,sans-serif!important;
+                 text-transform:none!important;letter-spacing:normal!important;
+                 font-weight:normal}
+    #printForm b,#printForm .pf-day,#printForm .pfb-bold{font-weight:bold!important}
+    .pf-abs{position:absolute;white-space:nowrap;line-height:1}
+    .dots{border-bottom:0.7pt dotted #000;display:inline-block}
 
-    /* ---- antet: 58.9pt inaltime ---- */
-    .pf-head{position:relative;height:58.9pt;width:100%}
-    .pf-title{position:absolute;left:0.4%;top:3pt;font-size:16pt;font-weight:bold;line-height:1;white-space:nowrap}
-    .pf-daterange{position:absolute;left:0.3%;top:27pt;font-size:11pt;line-height:1;white-space:nowrap}
-    .pf-kunde{position:absolute;left:35.1%;top:5pt;font-size:12pt;font-weight:bold;line-height:1;white-space:nowrap}
-    .pf-l2{position:absolute;left:35.1%;top:27pt;font-size:11pt;line-height:1;white-space:nowrap}
-    .pf-l3{position:absolute;left:35.1%;top:44.5pt;font-size:11pt;line-height:1;white-space:nowrap}
-    .pf-hn{position:absolute;left:96.2%;top:0;width:3.79%;height:20.5pt;border:1pt solid #000;
-           font-size:12pt;font-weight:bold;display:flex;align-items:center;justify-content:center}
-    .dots{border-bottom:1px dotted #000;display:inline-block;min-width:16mm}
-
-    /* ---- tabel principal ---- */
-    table.pf{width:100%;border-collapse:collapse;table-layout:fixed;border:1pt solid #000}
-    table.pf th,table.pf td{border:0.6pt solid #000;padding:0;vertical-align:middle;overflow:hidden}
-    table.pf th{text-align:center;font-weight:normal;line-height:1.1;font-size:7pt}
-    tr.pf-h1{height:15.5pt}
-    tr.pf-h2{height:24.8pt}
-    tr.pf-so{height:26.1pt}
-    tr.pf-r {height:25.75pt}
-    .pf-h8{font-size:8pt}
-    .pf-zeit{font-size:9pt}
-    .pf-fpa{font-size:10pt;font-weight:normal}
+    /* --- grila principala: x 2.6->812.0, y 59.9->486.7 ---
+       Grosimi EXACTE din original: separator zile 1.92pt, mijloc zi 0.12pt,
+       coloane 0.96pt, contur bloc galben 2.88pt --- */
+    table.pf{position:absolute;left:2.6pt;top:59.9pt;width:809.4pt;
+             border-collapse:collapse;table-layout:fixed;border:1.92pt solid #000}
+    table.pf th,table.pf td{border-left:0.96pt solid #000;border-right:0.96pt solid #000;
+                            border-top:0;border-bottom:0;padding:0;overflow:hidden;
+                            vertical-align:middle;text-align:center}
+    table.pf th{font-weight:normal;line-height:1.02;white-space:normal;
+                word-break:normal;hyphens:none;padding:0 0.5pt}
+    /* antet */
+    thead tr.pf-h1 th{border-bottom:0.96pt solid #000}
+    thead tr.pf-h2 th{border-bottom:1.92pt solid #000}
+    /* rand So de sus (unic) */
+    tr.pf-so td{border-bottom:1.92pt solid #000}
+    /* sub-randul 1 al zilei: in original 0.12pt (aproape invizibil).
+       Motorul de print rotunjeste la 0.75pt, deci il facem gri deschis
+       ca sa arate la fel de discret ca pe original. */
+    tr.pf-a td{border-bottom:0.12pt solid #a8a8a8}
+    /* sub-randul 2: separator gros intre zile */
+    tr.pf-b td{border-bottom:1.92pt solid #000}
+    /* celule unite pe 2 sub-randuri -> capat de zi, gros */
+    td.pf-span{border-bottom:1.92pt solid #000!important}
+    /* coloanele biroului de personal: separator mai subtire */
+    td.pf-pa{border-bottom:0.96pt solid #000!important}
+    /* marginile blocului galben: 2.88pt */
+    .pf-ybord{border-left:2.88pt solid #000!important}
+    table.pf tr>td:last-child,table.pf tr>th:last-child{border-right:2.88pt solid #000}
+    /* Tourablauf: linie de ghidaj la mijloc, ca in original */
+    td.pf-route{background:linear-gradient(to bottom,
+        transparent calc(50% - 0.3pt), #a8a8a8 calc(50% - 0.3pt),
+        #a8a8a8 calc(50% + 0.3pt), transparent calc(50% + 0.3pt))}
     .pf-yellow{background:#ffff00!important}
-    .pf-day{font-weight:bold;text-align:center;font-size:9pt}
-    .pf-t{font-size:9pt;font-weight:bold;text-align:center;line-height:1}
-    .pf-colon{font-size:9pt;font-weight:bold;text-align:center;line-height:1;color:#000}
-    .pf-route{font-size:8pt;line-height:1.2;padding:1pt 3pt!important;text-align:left;
-              vertical-align:top!important;word-wrap:break-word}
-    .pf-tacho{font-size:6pt;line-height:1;padding:1.5pt 3pt!important;text-align:left;
-              vertical-align:top!important}
-    .pf-tacho b{font-size:9pt;font-weight:bold;float:right}
-    .pf-aufl{font-size:6pt;line-height:1;padding:1.5pt 3pt!important;vertical-align:top!important;text-align:left}
-    .pf-hatch{background:repeating-linear-gradient(45deg,#b9b9b9,#b9b9b9 0.5pt,#fff 0.5pt,#fff 2.5pt)!important}
+    .pf-hatch{background:repeating-linear-gradient(45deg,#b9b9b9,#b9b9b9 0.8pt,#eee 0.8pt,#eee 2.4pt)!important}
+    .pf-day{font-weight:bold;font-size:8.5pt}
+    .pf-t{font-size:8.5pt}
+    .pf-colon{font-size:7pt}
+    .pf-route{font-size:7.5pt;line-height:1.15;text-align:left;
+              padding:0.8pt 2pt!important;word-wrap:break-word;white-space:normal}
+    .pf-tacho{font-size:6pt;line-height:1.12;text-align:left;padding:1pt 2.5pt!important}
+    .pf-tacho b{font-size:8.5pt;font-weight:normal;float:right}
+    .pf-aufl{font-size:6pt;text-align:left;padding:1.5pt 2.5pt!important;vertical-align:top!important}
 
-    /* ---- subsol: 485.8 -> 569.6 pt ---- */
-    .pf-bottom{position:relative;width:100%;height:83.8pt}
-    .pf-bl{position:absolute;left:0;top:0;width:35.08%;font-size:11pt;line-height:1}
-    .pf-bl .pf-d1{position:absolute;left:0.3%;top:35.3pt;white-space:nowrap}
-    .pf-bl .pf-d2{position:absolute;left:0.3%;top:73pt;white-space:nowrap}
-    .pf-sig-img{position:absolute;left:24%;top:52pt;height:26pt}
-    .pf-bm{position:absolute;left:35.08%;top:0;width:64.92%}
-    table.pfb{width:100%;border-collapse:collapse;table-layout:fixed;border:1pt solid #000}
-    table.pfb td,table.pfb th{border:0.6pt solid #000;padding:1pt 3pt;font-size:10pt;
-                              font-weight:normal;vertical-align:middle;overflow:hidden}
-    tr.pfb-ban{height:15.7pt}
-    tr.pfb-r{height:22.7pt}
-    .pfb-s{font-size:7pt;text-align:center}
-    .pfb-y{font-size:8pt;text-align:center}
-    .pf-bold{font-weight:bold}
+    /* --- subsol: x 284.5->812.0, y 486.7->570.1 --- */
+    table.pfb{position:absolute;left:284.5pt;top:486.7pt;width:527.5pt;
+              border-collapse:collapse;table-layout:fixed;border:0.9pt solid #000}
+    table.pfb td,table.pfb th{border:0.6pt solid #000;padding:1.5pt 3pt;
+                              font-size:7.5pt;font-weight:normal;text-align:left;overflow:hidden}
+    table.pfb th{text-align:center;font-size:7pt}
+    .pfb-bold{font-weight:bold;font-size:8.5pt}
   }
 </style>
 </head>
@@ -457,7 +457,7 @@
 const DAYS = ["Mo","Di","Mi","Do","Fr","Sa","So"];
 const DAYS_FULL = {Mo:"Luni",Di:"Marți",Mi:"Miercuri",Do:"Joi",Fr:"Vineri",Sa:"Sâmbătă",So:"Duminică"};
 const STORE = "reisekosten_bord_v1";
-const APP_VERSION = "1.2";
+const APP_VERSION = "1.4";
 const DATA_VERSION = 2;
 
 let state = load();
@@ -468,7 +468,7 @@ let editSeg = 'auto';
 /* ---------- storage ---------- */
 function freshState(){
   return { dataVersion:DATA_VERSION,
-    driver:{name:"Anghel Constantin Olivian",pnr:"4232",veh:"AA BR 583",std:"Aalen",kunde:"",docnr:""},
+    driver:{name:"Anghel Constantin Olivian",pnr:"4232",veh:"AA BR 535",std:"Aalen",kunde:"",docnr:""},
     plannedRest:"normal", weeks:{} };
 }
 
@@ -1000,148 +1000,130 @@ function buildPrintForm(){
   const dr=state.driver, w=curWeek();
   const mon=viewMonday, sat=dateForDay(mon,5);
 
-  /* prima și ultima zi lucrătoare din săptămână */
-  let firstIdx=-1, lastIdx=-1;
-  for(let i=0;i<7;i++){ const d=w.days[DAYS[i]]; if(d&&d.start){ if(firstIdx<0) firstIdx=i; } }
+  let firstIdx=-1,lastIdx=-1;
+  for(let i=0;i<7;i++){ const d=w.days[DAYS[i]]; if(d&&d.start&&firstIdx<0) firstIdx=i; }
   for(let i=6;i>=0;i--){ const d=w.days[DAYS[i]]; if(d&&d.stop){ lastIdx=i; break; } }
 
-  const c=(v)=>v?('<div class="pf-t">'+v+'</div>'):'<div class="pf-colon">:</div>';
+  const c=v=>v?'<span class="pf-t">'+v+'</span>':'<span class="pf-colon">:</span>';
 
-  /* rândul So de sus (hașurat, ca în original) */
-  let rows='<tr class="pf-so">'+
+  /* rand So de sus: hasura x 88.0->446.6 (Ende..Tourablauf), inaltime 26.0pt */
+  let rows='<tr class="pf-so" style="height:26.0pt">'+
       '<td class="pf-day">So</td>'+
-      '<td><div class="pf-colon">:</div></td>'+
-      '<td><div class="pf-colon">:</div></td>'+
+      '<td>'+c('')+'</td><td>'+c('')+'</td>'+
       '<td class="pf-hatch" colspan="5"></td>'+
-      '<td class="pf-tacho">Beginn Tour</td>'+
+      '<td class="pf-tacho">Beginn Tour<br>Ende Tour</td>'+
       '<td class="pf-aufl">Auflieger:</td>'+
-      '<td></td><td></td><td></td><td></td><td></td><td></td><td></td>'+
+      '<td class="pf-ybord"></td><td></td><td></td><td></td><td></td><td></td><td></td>'+
     '</tr>';
 
+  const H=[26.5,26.3, 26.5,26.3, 26.5,26.3, 26.5,26.3, 26.5,26.3, 24.7,24.5, 24.7,24.5];
   for(let i=0;i<7;i++){
     const key=DAYS[i], d=w.days[key]||{};
     const isFirst=(i===firstIdx), isLast=(i===lastIdx);
-
-    /* Verlassen Wohnung + Auswärtstätigkeit Beginn: doar prima zi
-       Auswärtstätigkeit Ende + Ankunft Wohnung: doar ultima zi
-       Nachtpause bis (rând 1) = startul zilei, dacă a fost noapte în camion înainte
-       Nachtpause von (rând 2) = stopul zilei, dacă urmează noapte în camion */
     const verlassen = isFirst ? (d.leaveHome||'') : '';
     const beginn    = isFirst ? (d.start||'')     : '';
     const ende      = isLast  ? (d.stop||'')      : '';
     const ankunft   = isLast  ? (d.arriveHome||''): '';
     const npBis = (firstIdx>=0 && i>firstIdx && d.start) ? d.start : '';
     const npVon = (lastIdx>=0 && i<lastIdx && d.stop)    ? d.stop  : '';
+    const hA=H[i*2], hB=H[i*2+1];
 
-    rows+='<tr class="pf-r">'+
-      '<td class="pf-day" rowspan="2">'+key+'</td>'+
-      '<td>'+c(verlassen)+'</td>'+
-      '<td>'+c('')+'</td>'+
-      '<td>'+c('')+'</td>'+
-      '<td>'+c('')+'</td>'+
-      '<td>'+c('')+'</td>'+
-      '<td>'+c(npBis)+'</td>'+
-      '<td class="pf-route" rowspan="2">'+(d.route?esc(d.route):'')+'</td>'+
-      '<td class="pf-tacho">Beginn Tour <b>'+(d.startKm||'')+'</b></td>'+
-      '<td class="pf-aufl" rowspan="2">Auflieger: '+(d.aufl?esc(d.aufl):'')+'</td>'+
-      '<td rowspan="2"></td>'+
-      '<td rowspan="2"></td><td rowspan="2"></td><td rowspan="2"></td>'+
-      '<td rowspan="2"></td><td rowspan="2"></td><td rowspan="2"></td>'+
-    '</tr>'+
-    '<tr class="pf-r">'+
-      '<td>'+c('')+'</td>'+
-      '<td>'+c(beginn)+'</td>'+
-      '<td>'+c(ende)+'</td>'+
-      '<td>'+c(ankunft)+'</td>'+
-      '<td>'+c(npVon)+'</td>'+
-      '<td>'+c('')+'</td>'+
-      '<td class="pf-tacho">Ende Tour <b>'+(d.stopKm||'')+'</b></td>'+
-    '</tr>';
+    rows+='<tr class="pf-a" style="height:'+hA+'pt">'+
+        '<td class="pf-day pf-span" rowspan="2">'+key+'</td>'+
+        '<td>'+c(verlassen)+'</td><td>'+c('')+'</td><td>'+c('')+'</td>'+
+        '<td>'+c('')+'</td><td>'+c('')+'</td><td>'+c(npBis)+'</td>'+
+        '<td class="pf-route pf-span" rowspan="2">'+(d.route?esc(d.route):'')+'</td>'+
+        '<td class="pf-tacho">Beginn Tour <b>'+(d.startKm||'')+'</b></td>'+
+        '<td class="pf-aufl pf-span" rowspan="2">Auflieger: '+(d.aufl?esc(d.aufl):'')+'</td>'+
+        '<td class="pf-span" rowspan="2"></td>'+
+        '<td class="pf-pa pf-ybord" rowspan="2"></td><td class="pf-pa" rowspan="2"></td>'+
+        '<td class="pf-pa" rowspan="2"></td><td class="pf-pa" rowspan="2"></td>'+
+        '<td class="pf-pa" rowspan="2"></td><td class="pf-pa" rowspan="2"></td>'+
+      '</tr>'+
+      '<tr class="pf-b" style="height:'+hB+'pt">'+
+        '<td>'+c('')+'</td><td>'+c(beginn)+'</td><td>'+c(ende)+'</td>'+
+        '<td>'+c(ankunft)+'</td><td>'+c(npVon)+'</td><td>'+c('')+'</td>'+
+        '<td class="pf-tacho">Ende Tour <b>'+(d.stopKm||'')+'</b></td>'+
+      '</tr>';
   }
 
-  const sigImg=state.sig?('<img class="pf-sig-img" src="'+state.sig+'">'):'';
-  const wk=isoWeek(mon);
+  const sig = state.sig ? '<img src="'+state.sig+'" style="position:absolute;left:68pt;top:548pt;height:24pt">' : '';
 
-  document.getElementById('printForm').innerHTML=
-    '<div class="pf-page">'+
-    '<div class="pf-head">'+
-      '<div class="pf-title">Reisekosten</div>'+
-      '<div class="pf-daterange">Datum von <b>'+fmtDate(mon)+'</b> bis <b>'+fmtDate(sat)+'</b></div>'+
-      '<div class="pf-kunde">Kunde (nur bei Werkverkehreinsatz): <span class="dots" style="min-width:74mm">'+esc(dr.kunde||'')+'</span></div>'+
-      '<div class="pf-l2">PersonalNr: <b>'+esc(dr.pnr||'')+'</b> <span class="dots" style="min-width:14mm"></span> Vor- und Nachname: <b>'+esc(dr.name||'')+'</b></div>'+
-      '<div class="pf-l3">Standort: <b>'+esc(dr.std||'')+'</b> <span class="dots" style="min-width:22mm"></span> Fahrzeug <b>'+esc(dr.veh||'')+'</b></div>'+
-      '<div class="pf-hn">'+wk+'</div>'+
-    '</div>'+
+  document.getElementById('printForm').innerHTML =
+    /* ---- antet (pozitii exacte din original) ---- */
+    '<div class="pf-abs" style="left:5.4pt;top:4pt;font-size:15pt;font-weight:bold">Reisekosten</div>'+
+    '<div class="pf-abs" style="left:4.7pt;top:28pt;font-size:8.5pt">Datum von <b>'+fmtDate(mon)+'</b> bis <b>'+fmtDate(sat)+'</b></div>'+
+    '<div class="pf-abs" style="left:286.7pt;top:6.2pt;font-size:8.5pt">Kunde (nur bei Werkverkehreinsatz): <span class="dots" style="width:150pt">'+esc(dr.kunde||'')+'</span></div>'+
+    '<div class="pf-abs" style="left:286.6pt;top:28pt;font-size:8.5pt">PersonalNr: <b>'+esc(dr.pnr||'')+'</b>&nbsp;&nbsp;&nbsp;Vor- und Nachname: <b>'+esc(dr.name||'')+'</b></div>'+
+    '<div class="pf-abs" style="left:286.6pt;top:45.8pt;font-size:8.5pt">Standort: <b>'+esc(dr.std||'')+'</b>&nbsp;&nbsp;&nbsp;Fahrzeug <b>'+esc(dr.veh||'')+'</b></div>'+
+    '<div class="pf-abs" style="left:782.6pt;top:0pt;width:29.8pt;height:20.5pt;border:0.9pt solid #000;'+
+      'font-size:11pt;font-weight:bold;display:flex;align-items:center;justify-content:center">'+isoWeek(mon)+'</div>'+
 
-    '<table class="pf">'+
-      '<colgroup>'+
-        '<col style="width:2.678%"><col style="width:4.073%"><col style="width:3.777%"><col style="width:3.777%">'+
-        '<col style="width:4.073%"><col style="width:3.777%"><col style="width:3.777%"><col style="width:28.845%">'+
-        '<col style="width:8.763%"><col style="width:10.627%"><col style="width:3.678%">'+
-        '<col style="width:3.666%"><col style="width:3.678%"><col style="width:3.678%">'+
-        '<col style="width:3.666%"><col style="width:3.678%"><col style="width:3.666%">'+
-      '</colgroup>'+
-      '<thead>'+
-      '<tr class="pf-h1">'+
-        '<th class="pf-zeit" rowspan="2">Zeit</th>'+
-        '<th>Verlassen</th>'+
-        '<th colspan="2">Auswärtstätigkeit</th>'+
-        '<th>Ankunft</th>'+
-        '<th colspan="2">Nachtpause</th>'+
-        '<th class="pf-h8" rowspan="2">Tourablauf</th>'+
-        '<th class="pf-h8" rowspan="2">Tachostand</th>'+
-        '<th class="pf-h8" rowspan="2">Tournummer / Maut</th>'+
-        '<th rowspan="2">Stapler<br>Nr</th>'+
-        '<th class="pf-yellow pf-fpa" colspan="6">Füllt Personalabteilung aus !!!!</th>'+
+    /* ---- grila principala ---- */
+    '<table class="pf"><colgroup>'+
+      '<col style="width:21.8pt"><col style="width:33.0pt"><col style="width:30.6pt"><col style="width:30.6pt">'+
+      '<col style="width:33.0pt"><col style="width:30.6pt"><col style="width:30.6pt"><col style="width:233.7pt">'+
+      '<col style="width:70.9pt"><col style="width:86.2pt"><col style="width:29.8pt">'+
+      '<col style="width:29.7pt"><col style="width:29.8pt"><col style="width:29.7pt">'+
+      '<col style="width:29.8pt"><col style="width:29.8pt"><col style="width:29.8pt">'+
+    '</colgroup><thead>'+
+      '<tr class="pf-h1" style="height:14.5pt">'+
+        '<th rowspan="2" style="font-size:8.5pt">Zeit</th>'+
+        '<th style="font-size:7pt">Verlassen</th>'+
+        '<th colspan="2" style="font-size:7pt">Auswärtstätigkeit</th>'+
+        '<th style="font-size:7pt">Ankunft</th>'+
+        '<th colspan="2" style="font-size:7pt">Nachtpause</th>'+
+        '<th rowspan="2" style="font-size:8.5pt">Tourablauf</th>'+
+        '<th rowspan="2" style="font-size:8.5pt">Tachostand</th>'+
+        '<th rowspan="2" style="font-size:8.5pt">Tournummer / Maut</th>'+
+        '<th rowspan="2" style="font-size:7pt">Stapler<br>Nr</th>'+
+        '<th class="pf-yellow pf-ybord" colspan="6" style="font-size:8pt">Füllt Personalabteilung aus !!!!</th>'+
       '</tr>'+
-      '<tr class="pf-h2">'+
-        '<th>Wohnung</th><th>Beginn</th><th>Ende</th><th>Wohnung</th><th>von</th><th>bis</th>'+
-        '<th class="pf-yellow pf-h8">h-na</th><th class="pf-yellow pf-h8">h-na2</th><th class="pf-yellow pf-h8">Me-h</th>'+
-        '<th class="pf-yellow pf-h8">SF-h<br>WV</th><th class="pf-yellow pf-h8">SF-h<br>Di</th><th class="pf-yellow pf-h8">Spes</th>'+
-      '</tr>'+
-      '</thead><tbody>'+rows+'</tbody>'+
-    '</table>'+
+      '<tr class="pf-h2" style="height:23.9pt">'+
+        '<th style="font-size:7pt">Wohnung</th><th style="font-size:7pt">Beginn</th>'+
+        '<th style="font-size:7pt">Ende</th><th style="font-size:7pt">Wohnung</th>'+
+        '<th style="font-size:7pt">von</th><th style="font-size:7pt">bis</th>'+
+        '<th class="pf-yellow pf-ybord" style="font-size:7pt">h-na</th>'+
+        '<th class="pf-yellow" style="font-size:7pt">h-na2</th>'+
+        '<th class="pf-yellow" style="font-size:7pt">Me-h</th>'+
+        '<th class="pf-yellow" style="font-size:7pt">SF-h<br>WV</th>'+
+        '<th class="pf-yellow" style="font-size:7pt">SF-h<br>Di</th>'+
+        '<th class="pf-yellow" style="font-size:7pt">Spes</th>'+
+      '</tr></thead><tbody>'+rows+'</tbody></table>'+
 
-    '<div class="pf-bottom">'+
-      '<div class="pf-bl">'+
-        '<div class="pf-d1">Datum: <b>'+fmtDate(sat)+'</b><span class="dots" style="min-width:34mm"></span></div>'+
-        '<div class="pf-d2">Unterschrift: <span class="dots" style="min-width:50mm"></span></div>'+
-        sigImg+
-      '</div>'+
-      '<div class="pf-bm">'+
-        '<table class="pfb">'+
-          '<colgroup>'+
-            '<col style="width:30.86%"><col style="width:29.47%">'+
-            '<col style="width:5.67%"><col style="width:5.66%"><col style="width:5.67%">'+
-            '<col style="width:5.67%"><col style="width:5.66%"><col style="width:5.67%">'+
-            '<col style="width:5.67%">'+
-          '</colgroup>'+
-          '<tr class="pfb-ban">'+
-            '<th class="pf-yellow pf-bold" colspan="2" style="font-size:9pt">Füllt Personalabteilung aus !!!!</th>'+
-            '<th class="pf-yellow pfb-y">MNS</th><th class="pf-yellow pfb-y">h-na</th><th class="pf-yellow pfb-y">h-na2</th>'+
-            '<th class="pf-yellow pfb-y">Me-h</th><th class="pf-yellow pfb-y">SF WV</th><th class="pf-yellow pfb-y">SF Di</th>'+
-            '<th class="pf-yellow pfb-y">Spes</th>'+
-          '</tr>'+
-          '<tr class="pfb-r">'+
-            '<td class="pf-bold">Dienstfahrt mit Privat-Pkw</td>'+
-            '<td>Multistandort<span class="dots" style="min-width:26mm"></span></td>'+
-            '<td></td><td></td><td></td><td></td><td></td><td></td><td></td>'+
-          '</tr>'+
-          '<tr class="pfb-r">'+
-            '<td>KFZ-Kennz: <span class="dots" style="min-width:18mm"></span></td>'+
-            '<td>Bereitschaft: <span class="dots" style="min-width:18mm"></span></td>'+
-            '<th class="pfb-s">Sta</th><td></td><td></td><td></td><td></td>'+
-            '<th class="pfb-s">Ber Di</th><th class="pfb-s">Zulage</th>'+
-          '</tr>'+
-          '<tr class="pfb-r">'+
-            '<td>Fahrt-km: <span class="dots" style="min-width:18mm"></span></td>'+
-            '<td>Fahrgeld: <span class="dots" style="min-width:22mm"></span></td>'+
-            '<td></td><td></td><td></td><td></td><td></td><td></td><td></td>'+
-          '</tr>'+
-        '</table>'+
-      '</div>'+
-    '</div>'+
-    '</div>';
+    /* ---- subsol stanga ---- */
+    '<div class="pf-abs" style="left:4.7pt;top:520pt;font-size:8.5pt">Datum: <b>'+fmtDate(sat)+'</b></div>'+
+    '<div class="pf-abs" style="left:4.7pt;top:557.8pt;font-size:8.5pt">Unterschrift:</div>'+ sig +
+
+    /* ---- subsol dreapta (blocuri firma) ---- */
+    '<table class="pfb"><colgroup>'+
+      '<col style="width:162pt"><col style="width:157.1pt"><col style="width:29.8pt">'+
+      '<col style="width:29.7pt"><col style="width:29.8pt"><col style="width:29.7pt">'+
+      '<col style="width:29.8pt"><col style="width:29.8pt"><col style="width:29.8pt">'+
+    '</colgroup><tbody>'+
+      '<tr style="height:15.3pt">'+
+        '<th class="pf-yellow" colspan="2" style="font-size:8pt">Füllt Personalabteilung aus !!!!</th>'+
+        '<th class="pf-yellow">MNS</th><th class="pf-yellow">h-na</th><th class="pf-yellow">h-na2</th>'+
+        '<th class="pf-yellow">Me-h</th><th class="pf-yellow">SF WV</th><th class="pf-yellow">SF Di</th>'+
+        '<th class="pf-yellow">Spes</th>'+
+      '</tr>'+
+      '<tr style="height:29.5pt">'+
+        '<td class="pfb-bold">Dienstfahrt mit Privat-Pkw</td>'+
+        '<td>Multistandort<span class="dots" style="width:70pt"></span></td>'+
+        '<td></td><td></td><td></td><td></td><td></td><td></td><td></td>'+
+      '</tr>'+
+      '<tr style="height:19.3pt">'+
+        '<td>KFZ-Kennz: <span class="dots" style="width:52pt"></span></td>'+
+        '<td>Bereitschaft: <span class="dots" style="width:56pt"></span></td>'+
+        '<th>Sta</th><td></td><td></td><td></td><td></td>'+
+        '<th style="font-size:6.5pt">Ber Di</th><th style="font-size:6.5pt">Zulage</th>'+
+      '</tr>'+
+      '<tr style="height:19.3pt">'+
+        '<td>Fahrt-km: <span class="dots" style="width:52pt"></span></td>'+
+        '<td>Fahrgeld: <span class="dots" style="width:70pt"></span></td>'+
+        '<td></td><td></td><td></td><td></td><td></td><td></td><td></td>'+
+      '</tr>'+
+    '</tbody></table>';
 }
 
 /* ---------- modal utils ---------- */
