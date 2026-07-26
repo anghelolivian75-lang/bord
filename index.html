@@ -167,16 +167,29 @@
     /* --- grila principala: x 2.6->812.0, y 59.9->486.7 ---
        Grosimi EXACTE din original: separator zile 1.92pt, mijloc zi 0.12pt,
        coloane 0.96pt, contur bloc galben 2.88pt --- */
-    table.pf{position:absolute;left:2.6pt;top:59.9pt;width:809.4pt;
-             border-collapse:collapse;table-layout:fixed;border:1.92pt solid #000}
+    table.pf{position:absolute;left:2.6pt;top:58.9pt;width:809.4pt;
+             border-collapse:collapse;table-layout:fixed;
+             border-top:none;border-left:1.92pt solid #000;
+             border-right:2.88pt solid #000;border-bottom:1.92pt solid #000}
     table.pf th,table.pf td{border-left:0.96pt solid #000;border-right:0.96pt solid #000;
                             border-top:0;border-bottom:0;padding:0;overflow:hidden;
                             vertical-align:middle;text-align:center}
     table.pf th{font-weight:normal;line-height:1.02;white-space:normal;
                 word-break:normal;hyphens:none;padding:0 0.5pt}
-    /* antet */
-    thead tr.pf-h1 th{border-bottom:0.96pt solid #000}
+    /* antet: marginea de sus coboara in trepte, ca in original */
+    thead tr.pf-h1 th{border-bottom:0.96pt solid #000;border-top:1.92pt solid #000}
     thead tr.pf-h2 th{border-bottom:1.92pt solid #000}
+    /* zona goala deasupra Tourablauf..Stapler Nr (hartie alba, fara chenar) */
+    th.pf-gap{border:none!important;background:transparent!important}
+    /* capul de coloana care incepe abia pe randul 2, cu chenar gros */
+    th.pf-h2b{border-top:1.92pt solid #000!important;
+              border-left:1.92pt solid #000;border-right:1.92pt solid #000}
+    /* despartitorul gros dintre blocul de ore si Tourablauf */
+    th.pf-thick-r{border-right:1.92pt solid #000!important}
+    /* grupuri fara linie orizontala dedesubt (ca in original) */
+    th.pf-nobot{border-bottom:none!important}
+    /* celula de antet cu 2 randuri de text, distantate ca in original */
+    th.pf-2line{display:table-cell;vertical-align:middle;line-height:19pt;font-size:7pt}
     /* rand So de sus (unic) */
     tr.pf-so td{border-bottom:1.92pt solid #000}
     /* sub-randul 1 al zilei: in original 0.12pt (aproape invizibil).
@@ -201,13 +214,20 @@
     .pf-day{font-weight:bold;font-size:8.5pt}
     .pf-t{font-size:8.5pt}
     .pf-colon{font-size:7pt}
-    .pf-route{font-size:7.5pt;line-height:1.15;text-align:left;
+    .pf-route{font-size:10pt;line-height:1.2;text-align:left;
               padding:0.8pt 2pt!important;word-wrap:break-word;white-space:normal}
     .pf-tacho{font-size:6pt;line-height:1.12;text-align:left;padding:1pt 2.5pt!important}
     .pf-tacho b{font-size:8.5pt;font-weight:normal;float:right}
     .pf-aufl{font-size:6pt;text-align:left;padding:1.5pt 2.5pt!important;vertical-align:top!important}
 
-    /* --- subsol: x 284.5->812.0, y 486.7->570.1 --- */
+    /* --- subsol desenat 1:1: linii ca dreptunghiuri, text pozitionat --- */
+    .pf-hl{position:absolute;background:#000}
+    .pf-vl{position:absolute;background:#000}
+    .pf-yb{position:absolute;background:#ffff00!important}
+    .pf-tx{position:absolute;white-space:nowrap;font-size:8pt;line-height:1}
+    .pf-tc{position:absolute;text-align:center;font-size:7.5pt;line-height:1}
+
+    /* --- subsol vechi (nefolosit) --- */
     table.pfb{position:absolute;left:284.5pt;top:486.7pt;width:527.5pt;
               border-collapse:collapse;table-layout:fixed;border:0.9pt solid #000}
     table.pfb td,table.pfb th{border:0.6pt solid #000;padding:1.5pt 3pt;
@@ -457,7 +477,7 @@
 const DAYS = ["Mo","Di","Mi","Do","Fr","Sa","So"];
 const DAYS_FULL = {Mo:"Luni",Di:"Marți",Mi:"Miercuri",Do:"Joi",Fr:"Vineri",Sa:"Sâmbătă",So:"Duminică"};
 const STORE = "reisekosten_bord_v1";
-const APP_VERSION = "1.4";
+const APP_VERSION = "1.7";
 const DATA_VERSION = 2;
 
 let state = load();
@@ -984,14 +1004,16 @@ function printForm(){
   setTimeout(()=>{ shrinkRoutes(); setTimeout(()=>window.print(),120); },80);
 }
 
-/* micșorează automat fontul traseului până încape perfect în celulă */
+/* Fontul traseului porneste MARE (10pt) si scade doar cat e nevoie
+   ca sa incapa perfect in celula. Unitatea e pt, nu px. */
 function shrinkRoutes(){
   document.querySelectorAll('#printForm .pf-route').forEach(cell=>{
-    let size=7.6;
-    cell.style.fontSize=size+'px';
+    let size=10;
+    cell.style.fontSize=size+'pt';
     let guard=0;
-    while(cell.scrollHeight>cell.clientHeight+1 && size>3.4 && guard<40){
-      size-=0.25; cell.style.fontSize=size+'px'; guard++;
+    while((cell.scrollHeight>cell.clientHeight+1 || cell.scrollWidth>cell.clientWidth+1)
+          && size>5 && guard<40){
+      size-=0.25; cell.style.fontSize=size+'pt'; guard++;
     }
   });
 }
@@ -1069,20 +1091,22 @@ function buildPrintForm(){
     '</colgroup><thead>'+
       '<tr class="pf-h1" style="height:14.5pt">'+
         '<th rowspan="2" style="font-size:8.5pt">Zeit</th>'+
-        '<th style="font-size:7pt">Verlassen</th>'+
-        '<th colspan="2" style="font-size:7pt">Auswärtstätigkeit</th>'+
-        '<th style="font-size:7pt">Ankunft</th>'+
-        '<th colspan="2" style="font-size:7pt">Nachtpause</th>'+
-        '<th rowspan="2" style="font-size:8.5pt">Tourablauf</th>'+
-        '<th rowspan="2" style="font-size:8.5pt">Tachostand</th>'+
-        '<th rowspan="2" style="font-size:8.5pt">Tournummer / Maut</th>'+
-        '<th rowspan="2" style="font-size:7pt">Stapler<br>Nr</th>'+
-        '<th class="pf-yellow pf-ybord" colspan="6" style="font-size:8pt">Füllt Personalabteilung aus !!!!</th>'+
+        '<th rowspan="2" class="pf-2line">Verlassen<br>Wohnung</th>'+
+        '<th colspan="2" class="pf-nobot" style="font-size:7pt;vertical-align:top;padding-top:1.5pt">Auswärtstätigkeit</th>'+
+        '<th rowspan="2" class="pf-2line">Ankunft<br>Wohnung</th>'+
+        '<th colspan="2" class="pf-nobot pf-thick-r" style="font-size:7pt;vertical-align:top;padding-top:1.5pt">Nachtpause</th>'+
+        '<th class="pf-gap" colspan="4"></th>'+
+        '<th class="pf-yellow pf-ybord pf-nobot" colspan="6" style="font-size:8pt;vertical-align:top;padding-top:1pt">Füllt Personalabteilung aus !!!!</th>'+
       '</tr>'+
       '<tr class="pf-h2" style="height:23.9pt">'+
-        '<th style="font-size:7pt">Wohnung</th><th style="font-size:7pt">Beginn</th>'+
-        '<th style="font-size:7pt">Ende</th><th style="font-size:7pt">Wohnung</th>'+
-        '<th style="font-size:7pt">von</th><th style="font-size:7pt">bis</th>'+
+        '<th style="font-size:7pt;vertical-align:bottom;padding-bottom:1.5pt">Beginn</th>'+
+        '<th style="font-size:7pt;vertical-align:bottom;padding-bottom:1.5pt">Ende</th>'+
+        '<th style="font-size:7pt;vertical-align:bottom;padding-bottom:1.5pt">von</th>'+
+        '<th class="pf-thick-r" style="font-size:7pt;vertical-align:bottom;padding-bottom:1.5pt">bis</th>'+
+        '<th class="pf-h2b" style="font-size:8.5pt">Tourablauf</th>'+
+        '<th class="pf-h2b" style="font-size:8.5pt">Tachostand</th>'+
+        '<th class="pf-h2b" style="font-size:8.5pt">Tournummer / Maut</th>'+
+        '<th class="pf-h2b" style="font-size:7pt">Stapler<br>Nr</th>'+
         '<th class="pf-yellow pf-ybord" style="font-size:7pt">h-na</th>'+
         '<th class="pf-yellow" style="font-size:7pt">h-na2</th>'+
         '<th class="pf-yellow" style="font-size:7pt">Me-h</th>'+
@@ -1095,35 +1119,53 @@ function buildPrintForm(){
     '<div class="pf-abs" style="left:4.7pt;top:520pt;font-size:8.5pt">Datum: <b>'+fmtDate(sat)+'</b></div>'+
     '<div class="pf-abs" style="left:4.7pt;top:557.8pt;font-size:8.5pt">Unterschrift:</div>'+ sig +
 
-    /* ---- subsol dreapta (blocuri firma) ---- */
-    '<table class="pfb"><colgroup>'+
-      '<col style="width:162pt"><col style="width:157.1pt"><col style="width:29.8pt">'+
-      '<col style="width:29.7pt"><col style="width:29.8pt"><col style="width:29.7pt">'+
-      '<col style="width:29.8pt"><col style="width:29.8pt"><col style="width:29.8pt">'+
-    '</colgroup><tbody>'+
-      '<tr style="height:15.3pt">'+
-        '<th class="pf-yellow" colspan="2" style="font-size:8pt">Füllt Personalabteilung aus !!!!</th>'+
-        '<th class="pf-yellow">MNS</th><th class="pf-yellow">h-na</th><th class="pf-yellow">h-na2</th>'+
-        '<th class="pf-yellow">Me-h</th><th class="pf-yellow">SF WV</th><th class="pf-yellow">SF Di</th>'+
-        '<th class="pf-yellow">Spes</th>'+
-      '</tr>'+
-      '<tr style="height:29.5pt">'+
-        '<td class="pfb-bold">Dienstfahrt mit Privat-Pkw</td>'+
-        '<td>Multistandort<span class="dots" style="width:70pt"></span></td>'+
-        '<td></td><td></td><td></td><td></td><td></td><td></td><td></td>'+
-      '</tr>'+
-      '<tr style="height:19.3pt">'+
-        '<td>KFZ-Kennz: <span class="dots" style="width:52pt"></span></td>'+
-        '<td>Bereitschaft: <span class="dots" style="width:56pt"></span></td>'+
-        '<th>Sta</th><td></td><td></td><td></td><td></td>'+
-        '<th style="font-size:6.5pt">Ber Di</th><th style="font-size:6.5pt">Zulage</th>'+
-      '</tr>'+
-      '<tr style="height:19.3pt">'+
-        '<td>Fahrt-km: <span class="dots" style="width:52pt"></span></td>'+
-        '<td>Fahrgeld: <span class="dots" style="width:70pt"></span></td>'+
-        '<td></td><td></td><td></td><td></td><td></td><td></td><td></td>'+
-      '</tr>'+
-    '</tbody></table>';
+    /* ---- subsol: reconstruit 1:1 dupa masuratorile din originalul PDF ---- */
+    /* banda galbena de fundal */
+    '<div class="pf-yb" style="left:284.5pt;top:486.7pt;width:527.5pt;height:15.4pt"></div>'+
+    /* linii orizontale */
+    '<div class="pf-hl" style="left:283.1pt;top:485.3pt;width:351.7pt;height:2.88pt"></div>'+
+    '<div class="pf-hl" style="left:634.8pt;top:485.8pt;width:175.7pt;height:1.92pt"></div>'+
+    '<div class="pf-hl" style="left:604.1pt;top:501.5pt;width:206.4pt;height:0.96pt"></div>'+
+    '<div class="pf-hl" style="left:603.1pt;top:531.5pt;width:177.6pt;height:1.92pt"></div>'+
+    '<div class="pf-hl" style="left:783.6pt;top:531.5pt;width:26.9pt;height:1.92pt"></div>'+
+    '<div class="pf-hl" style="left:286.0pt;top:569.2pt;width:318.1pt;height:1.92pt"></div>'+
+    '<div class="pf-hl" style="left:604.1pt;top:569.6pt;width:29.7pt;height:0.96pt"></div>'+
+    '<div class="pf-hl" style="left:752.9pt;top:569.6pt;width:27.8pt;height:0.96pt"></div>'+
+    '<div class="pf-hl" style="left:783.6pt;top:569.6pt;width:26.9pt;height:0.96pt"></div>'+
+    /* linii verticale */
+    '<div class="pf-vl" style="left:283.1pt;top:485.3pt;width:2.88pt;height:85.8pt"></div>'+
+    '<div class="pf-vl" style="left:603.1pt;top:488.2pt;width:0.96pt;height:43.3pt"></div>'+
+    '<div class="pf-vl" style="left:603.1pt;top:533.4pt;width:0.96pt;height:35.8pt"></div>'+
+    '<div class="pf-vl" style="left:632.9pt;top:488.2pt;width:0.96pt;height:43.3pt"></div>'+
+    '<div class="pf-vl" style="left:632.9pt;top:533.4pt;width:0.96pt;height:37.2pt"></div>'+
+    '<div class="pf-vl" style="left:662.6pt;top:487.7pt;width:0.96pt;height:43.8pt"></div>'+
+    '<div class="pf-vl" style="left:692.4pt;top:487.7pt;width:0.96pt;height:43.8pt"></div>'+
+    '<div class="pf-vl" style="left:722.2pt;top:487.7pt;width:0.96pt;height:43.8pt"></div>'+
+    '<div class="pf-vl" style="left:751.9pt;top:487.7pt;width:0.96pt;height:43.8pt"></div>'+
+    '<div class="pf-vl" style="left:751.9pt;top:533.4pt;width:0.96pt;height:37.2pt"></div>'+
+    '<div class="pf-vl" style="left:781.7pt;top:487.7pt;width:0.96pt;height:43.8pt"></div>'+
+    '<div class="pf-vl" style="left:780.7pt;top:531.5pt;width:2.88pt;height:39.1pt"></div>'+
+    '<div class="pf-vl" style="left:810.5pt;top:485.3pt;width:2.88pt;height:85.3pt"></div>'+
+    /* texte in banda galbena */
+    '<div class="pf-tc" style="left:283.1pt;top:490.4pt;width:320pt;font-size:8pt;font-weight:bold">Füllt Personalabteilung aus !!!!</div>'+
+    '<div class="pf-tc" style="left:603.1pt;top:490.7pt;width:29.8pt">MNS</div>'+
+    '<div class="pf-tc" style="left:632.9pt;top:490.7pt;width:29.7pt">h-na</div>'+
+    '<div class="pf-tc" style="left:662.6pt;top:490.7pt;width:29.8pt">h-na2</div>'+
+    '<div class="pf-tc" style="left:692.4pt;top:490.7pt;width:29.7pt">Me-h</div>'+
+    '<div class="pf-tc" style="left:722.2pt;top:490.7pt;width:29.8pt">SF WV</div>'+
+    '<div class="pf-tc" style="left:751.9pt;top:490.7pt;width:29.8pt">SF Di</div>'+
+    '<div class="pf-tc" style="left:781.7pt;top:490.7pt;width:29.8pt">Spes</div>'+
+    /* texte in caseta Dienstfahrt (fara linii interioare, ca in original) */
+    '<div class="pf-tx" style="left:286.4pt;top:504.8pt;font-size:9pt;font-weight:bold">Dienstfahrt mit Privat-Pkw</div>'+
+    '<div class="pf-tx" style="left:448.4pt;top:508.9pt">Multistandort<span class="dots" style="width:62pt"></span></div>'+
+    '<div class="pf-tx" style="left:286.4pt;top:529.2pt">KFZ-Kennz: <span class="dots" style="width:52pt"></span></div>'+
+    '<div class="pf-tx" style="left:448.4pt;top:533.6pt">Bereitschaft: <span class="dots" style="width:54pt"></span></div>'+
+    '<div class="pf-tx" style="left:286.4pt;top:553.9pt">Fahrt-km: <span class="dots" style="width:52pt"></span></div>'+
+    '<div class="pf-tx" style="left:448.4pt;top:558.3pt">Fahrgeld: <span class="dots" style="width:68pt"></span></div>'+
+    /* etichete dreapta jos */
+    '<div class="pf-tc" style="left:603.1pt;top:533.8pt;width:29.8pt;font-size:7pt">Sta</div>'+
+    '<div class="pf-tc" style="left:751.9pt;top:533.8pt;width:28.8pt;font-size:7pt">Ber Di</div>'+
+    '<div class="pf-tc" style="left:783.6pt;top:533.8pt;width:26.9pt;font-size:7pt">Zulage</div>';
 }
 
 /* ---------- modal utils ---------- */
