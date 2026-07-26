@@ -141,48 +141,67 @@
   .verbar button{background:var(--panel2);border:1px solid var(--line);color:var(--muted);
                  border-radius:8px;padding:7px 12px;font-family:var(--mono);font-size:11px}
 
-  /* ---------- PRINT: A4 landscape · replică formular Reisekosten ---------- */
+  /* ---------- PRINT: A4 landscape · replica 1:1 a formularului original ---------- */
+  /* Masurat din Formular_Reisekostenabrechnung_Stand_20_11_2017.pdf
+     Pagina 841.68 x 595.20 pt (A4 landscape). Tabel: x 2.2 -> 811.4 pt, y 58.9 -> 485.8 pt */
   #printForm{display:none}
   @media screen{ #printForm{display:none!important} }
   @media print{
-    @page{size:A4 landscape;margin:7mm}
+    @page{size:A4 landscape;margin:4mm 5mm}
     html,body{background:#fff!important;margin:0;padding:0}
     .wrap,.footer,.modal{display:none!important}
-    #printForm{display:block!important;color:#000;font-family:Arial,Helvetica,sans-serif}
-    #printForm *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+    #printForm{display:block!important;color:#000;font-family:Arial,Helvetica,sans-serif;width:100%}
+    #printForm *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;
+                 box-sizing:border-box}
 
-    /* antet */
-    .pf-head{display:flex;align-items:flex-start;margin-bottom:3px}
-    .pf-hl{width:26%}
-    .pf-title{font-size:15px;font-weight:bold;line-height:1.1}
-    .pf-daterange{font-size:8.5px;margin-top:2px}
-    .pf-hr{flex:1;font-size:8.5px;line-height:1.55;padding-left:4px}
-    .pf-hn{width:34px;height:20px;border:1px solid #000;font-size:11px;font-weight:bold;
-           display:flex;align-items:center;justify-content:center;margin-left:6px;flex-shrink:0}
-    .dots{border-bottom:1px dotted #000;display:inline-block;min-width:60px}
+    /* ---- antet: 58.9pt inaltime ---- */
+    .pf-head{position:relative;height:58.9pt;width:100%}
+    .pf-title{position:absolute;left:0.4%;top:3pt;font-size:16pt;font-weight:bold;line-height:1;white-space:nowrap}
+    .pf-daterange{position:absolute;left:0.3%;top:27pt;font-size:11pt;line-height:1;white-space:nowrap}
+    .pf-kunde{position:absolute;left:35.1%;top:5pt;font-size:12pt;font-weight:bold;line-height:1;white-space:nowrap}
+    .pf-l2{position:absolute;left:35.1%;top:27pt;font-size:11pt;line-height:1;white-space:nowrap}
+    .pf-l3{position:absolute;left:35.1%;top:44.5pt;font-size:11pt;line-height:1;white-space:nowrap}
+    .pf-hn{position:absolute;left:96.2%;top:0;width:3.79%;height:20.5pt;border:1pt solid #000;
+           font-size:12pt;font-weight:bold;display:flex;align-items:center;justify-content:center}
+    .dots{border-bottom:1px dotted #000;display:inline-block;min-width:16mm}
 
-    /* tabel principal */
-    table.pf{width:100%;border-collapse:collapse;table-layout:fixed;border:1.3px solid #000}
-    table.pf th,table.pf td{border:0.8px solid #000;padding:0;vertical-align:middle;overflow:hidden}
-    table.pf th{font-size:6.4px;text-align:center;font-weight:normal;line-height:1.15;padding:1px 0}
+    /* ---- tabel principal ---- */
+    table.pf{width:100%;border-collapse:collapse;table-layout:fixed;border:1pt solid #000}
+    table.pf th,table.pf td{border:0.6pt solid #000;padding:0;vertical-align:middle;overflow:hidden}
+    table.pf th{text-align:center;font-weight:normal;line-height:1.1;font-size:7pt}
+    tr.pf-h1{height:15.5pt}
+    tr.pf-h2{height:24.8pt}
+    tr.pf-so{height:26.1pt}
+    tr.pf-r {height:25.75pt}
+    .pf-h8{font-size:8pt}
+    .pf-zeit{font-size:9pt}
+    .pf-fpa{font-size:10pt;font-weight:normal}
     .pf-yellow{background:#ffff00!important}
-    .pf-day{font-weight:bold;text-align:center;font-size:9px}
-    .pf-t{font-size:8.2px;text-align:center;height:11.5px;line-height:11.5px;font-family:Arial,Helvetica,sans-serif}
-    .pf-colon{font-size:7px;text-align:center;color:#000}
-    .pf-route{font-size:7.6px;line-height:1.25;padding:1px 2px!important;text-align:left;word-wrap:break-word}
-    .pf-tacho{font-size:6px;line-height:1.1;padding:1px 2px!important;text-align:left}
-    .pf-tacho b{font-size:8.2px;font-weight:normal;float:right}
-    .pf-aufl{font-size:6px;padding:1px 2px!important;vertical-align:top!important}
-    .pf-hatch{background:repeating-linear-gradient(45deg,#c9c9c9,#c9c9c9 1px,#e8e8e8 1px,#e8e8e8 3px)!important}
+    .pf-day{font-weight:bold;text-align:center;font-size:9pt}
+    .pf-t{font-size:9pt;font-weight:bold;text-align:center;line-height:1}
+    .pf-colon{font-size:9pt;font-weight:bold;text-align:center;line-height:1;color:#000}
+    .pf-route{font-size:8pt;line-height:1.2;padding:1pt 3pt!important;text-align:left;
+              vertical-align:top!important;word-wrap:break-word}
+    .pf-tacho{font-size:6pt;line-height:1;padding:1.5pt 3pt!important;text-align:left;
+              vertical-align:top!important}
+    .pf-tacho b{font-size:9pt;font-weight:bold;float:right}
+    .pf-aufl{font-size:6pt;line-height:1;padding:1.5pt 3pt!important;vertical-align:top!important;text-align:left}
+    .pf-hatch{background:repeating-linear-gradient(45deg,#b9b9b9,#b9b9b9 0.5pt,#fff 0.5pt,#fff 2.5pt)!important}
 
-    /* subsol */
-    .pf-bottom{display:flex;align-items:flex-start;margin-top:5px}
-    .pf-bl{width:31%;font-size:8.5px;line-height:2.4}
-    .pf-sig-img{height:26px;display:block;margin-top:-4px}
-    .pf-bm{flex:1}
-    table.pfb{width:100%;border-collapse:collapse;border:1.3px solid #000;font-size:7.5px}
-    table.pfb td,table.pfb th{border:0.8px solid #000;padding:2px 3px;height:13px}
-    table.pfb th{font-weight:normal;font-size:6.4px;text-align:center}
+    /* ---- subsol: 485.8 -> 569.6 pt ---- */
+    .pf-bottom{position:relative;width:100%;height:83.8pt}
+    .pf-bl{position:absolute;left:0;top:0;width:35.08%;font-size:11pt;line-height:1}
+    .pf-bl .pf-d1{position:absolute;left:0.3%;top:35.3pt;white-space:nowrap}
+    .pf-bl .pf-d2{position:absolute;left:0.3%;top:73pt;white-space:nowrap}
+    .pf-sig-img{position:absolute;left:24%;top:52pt;height:26pt}
+    .pf-bm{position:absolute;left:35.08%;top:0;width:64.92%}
+    table.pfb{width:100%;border-collapse:collapse;table-layout:fixed;border:1pt solid #000}
+    table.pfb td,table.pfb th{border:0.6pt solid #000;padding:1pt 3pt;font-size:10pt;
+                              font-weight:normal;vertical-align:middle;overflow:hidden}
+    tr.pfb-ban{height:15.7pt}
+    tr.pfb-r{height:22.7pt}
+    .pfb-s{font-size:7pt;text-align:center}
+    .pfb-y{font-size:8pt;text-align:center}
     .pf-bold{font-weight:bold}
   }
 </style>
@@ -438,7 +457,7 @@ let editSeg = 'auto';
 /* ---------- storage ---------- */
 function freshState(){
   return { dataVersion:DATA_VERSION,
-    driver:{name:"Anghel Constantin Olivian",pnr:"4232",veh:"AA BR 535",std:"Aalen",kunde:"",docnr:""},
+    driver:{name:"Anghel Constantin Olivian",pnr:"4232",veh:"AA BR 583",std:"Aalen",kunde:"",docnr:""},
     plannedRest:"normal", weeks:{} };
 }
 
@@ -978,12 +997,12 @@ function buildPrintForm(){
   const c=(v)=>v?('<div class="pf-t">'+v+'</div>'):'<div class="pf-colon">:</div>';
 
   /* rândul So de sus (hașurat, ca în original) */
-  let rows='<tr>'+
+  let rows='<tr class="pf-so">'+
       '<td class="pf-day">So</td>'+
       '<td><div class="pf-colon">:</div></td>'+
       '<td><div class="pf-colon">:</div></td>'+
       '<td class="pf-hatch" colspan="5"></td>'+
-      '<td class="pf-tacho">Beginn Tour<br>Ende Tour</td>'+
+      '<td class="pf-tacho">Beginn Tour</td>'+
       '<td class="pf-aufl">Auflieger:</td>'+
       '<td></td><td></td><td></td><td></td><td></td><td></td><td></td>'+
     '</tr>';
@@ -1003,7 +1022,7 @@ function buildPrintForm(){
     const npBis = (firstIdx>=0 && i>firstIdx && d.start) ? d.start : '';
     const npVon = (lastIdx>=0 && i<lastIdx && d.stop)    ? d.stop  : '';
 
-    rows+='<tr>'+
+    rows+='<tr class="pf-r">'+
       '<td class="pf-day" rowspan="2">'+key+'</td>'+
       '<td>'+c(verlassen)+'</td>'+
       '<td>'+c('')+'</td>'+
@@ -1018,7 +1037,7 @@ function buildPrintForm(){
       '<td rowspan="2"></td><td rowspan="2"></td><td rowspan="2"></td>'+
       '<td rowspan="2"></td><td rowspan="2"></td><td rowspan="2"></td>'+
     '</tr>'+
-    '<tr>'+
+    '<tr class="pf-r">'+
       '<td>'+c('')+'</td>'+
       '<td>'+c(beginn)+'</td>'+
       '<td>'+c(ende)+'</td>'+
@@ -1034,71 +1053,78 @@ function buildPrintForm(){
 
   document.getElementById('printForm').innerHTML=
     '<div class="pf-head">'+
-      '<div class="pf-hl">'+
-        '<div class="pf-title">Reisekosten</div>'+
-        '<div class="pf-daterange">Datum von <b>'+fmtDate(mon)+'</b> bis <b>'+fmtDate(sat)+'</b></div>'+
-      '</div>'+
-      '<div class="pf-hr">'+
-        'Kunde (nur bei Werkverkehreinsatz): <span class="dots" style="min-width:230px">'+esc(dr.kunde||'')+'</span><br>'+
-        'PersonalNr.: <b>'+esc(dr.pnr||'')+'</b>&nbsp;&nbsp;Vor- und Nachname: <b>'+esc(dr.name||'')+'</b><br>'+
-        'Standort: <b>'+esc(dr.std||'')+'</b>&nbsp;&nbsp;Fahrzeug: <b>'+esc(dr.veh||'')+'</b>'+
-      '</div>'+
+      '<div class="pf-title">Reisekosten</div>'+
+      '<div class="pf-daterange">Datum von <b>'+fmtDate(mon)+'</b> bis <b>'+fmtDate(sat)+'</b></div>'+
+      '<div class="pf-kunde">Kunde (nur bei Werkverkehreinsatz): <span class="dots" style="min-width:74mm">'+esc(dr.kunde||'')+'</span></div>'+
+      '<div class="pf-l2">PersonalNr: <b>'+esc(dr.pnr||'')+'</b> <span class="dots" style="min-width:14mm"></span> Vor- und Nachname: <b>'+esc(dr.name||'')+'</b></div>'+
+      '<div class="pf-l3">Standort: <b>'+esc(dr.std||'')+'</b> <span class="dots" style="min-width:22mm"></span> Fahrzeug <b>'+esc(dr.veh||'')+'</b></div>'+
       '<div class="pf-hn">'+wk+'</div>'+
     '</div>'+
 
     '<table class="pf">'+
       '<colgroup>'+
-        '<col style="width:2.8%"><col style="width:4.1%"><col style="width:3.9%"><col style="width:3.7%">'+
-        '<col style="width:3.9%"><col style="width:3.7%"><col style="width:3.8%"><col style="width:28.9%">'+
-        '<col style="width:8.7%"><col style="width:10.9%"><col style="width:3.6%">'+
-        '<col style="width:3.3%"><col style="width:3.6%"><col style="width:3.6%">'+
-        '<col style="width:3.8%"><col style="width:3.8%"><col style="width:4.0%">'+
+        '<col style="width:2.678%"><col style="width:4.073%"><col style="width:3.777%"><col style="width:3.777%">'+
+        '<col style="width:4.073%"><col style="width:3.777%"><col style="width:3.777%"><col style="width:28.845%">'+
+        '<col style="width:8.763%"><col style="width:10.627%"><col style="width:3.678%">'+
+        '<col style="width:3.666%"><col style="width:3.678%"><col style="width:3.678%">'+
+        '<col style="width:3.666%"><col style="width:3.678%"><col style="width:3.666%">'+
       '</colgroup>'+
       '<thead>'+
-      '<tr>'+
-        '<th rowspan="2">Zeit</th>'+
+      '<tr class="pf-h1">'+
+        '<th class="pf-zeit" rowspan="2">Zeit</th>'+
         '<th>Verlassen</th>'+
         '<th colspan="2">Auswärtstätigkeit</th>'+
         '<th>Ankunft</th>'+
         '<th colspan="2">Nachtpause</th>'+
-        '<th rowspan="2">Tourablauf</th>'+
-        '<th rowspan="2">Tachostand</th>'+
-        '<th rowspan="2">Tournummer / Maut</th>'+
+        '<th class="pf-h8" rowspan="2">Tourablauf</th>'+
+        '<th class="pf-h8" rowspan="2">Tachostand</th>'+
+        '<th class="pf-h8" rowspan="2">Tournummer / Maut</th>'+
         '<th rowspan="2">Stapler<br>Nr</th>'+
-        '<th class="pf-yellow" colspan="6">Füllt Personalabteilung aus !!!!</th>'+
+        '<th class="pf-yellow pf-fpa" colspan="6">Füllt Personalabteilung aus !!!!</th>'+
       '</tr>'+
-      '<tr>'+
+      '<tr class="pf-h2">'+
         '<th>Wohnung</th><th>Beginn</th><th>Ende</th><th>Wohnung</th><th>von</th><th>bis</th>'+
-        '<th class="pf-yellow">h-na</th><th class="pf-yellow">h-na2</th><th class="pf-yellow">Me-h</th>'+
-        '<th class="pf-yellow">SF-h<br>WV</th><th class="pf-yellow">SF-h<br>Di</th><th class="pf-yellow">Spes</th>'+
+        '<th class="pf-yellow pf-h8">h-na</th><th class="pf-yellow pf-h8">h-na2</th><th class="pf-yellow pf-h8">Me-h</th>'+
+        '<th class="pf-yellow pf-h8">SF-h<br>WV</th><th class="pf-yellow pf-h8">SF-h<br>Di</th><th class="pf-yellow pf-h8">Spes</th>'+
       '</tr>'+
       '</thead><tbody>'+rows+'</tbody>'+
     '</table>'+
 
     '<div class="pf-bottom">'+
       '<div class="pf-bl">'+
-        'Datum: <b>'+fmtDate(sat)+'</b><br>'+
-        'Unterschrift: '+sigImg+
+        '<div class="pf-d1">Datum: <b>'+fmtDate(sat)+'</b><span class="dots" style="min-width:34mm"></span></div>'+
+        '<div class="pf-d2">Unterschrift: <span class="dots" style="min-width:50mm"></span></div>'+
+        sigImg+
       '</div>'+
       '<div class="pf-bm">'+
         '<table class="pfb">'+
-          '<tr>'+
-            '<td class="pf-bold" style="width:26%">Dienstfahrt mit Privat-Pkw</td>'+
-            '<td style="width:26%">Multistandort<span class="dots"></span></td>'+
-            '<th class="pf-yellow">MNS</th><th class="pf-yellow">h-na</th><th class="pf-yellow">h-na2</th>'+
-            '<th class="pf-yellow">Me-h</th><th class="pf-yellow">SF WV</th><th class="pf-yellow">SF Di</th>'+
-            '<th class="pf-yellow">Spes</th>'+
+          '<colgroup>'+
+            '<col style="width:30.86%"><col style="width:29.47%">'+
+            '<col style="width:5.67%"><col style="width:5.66%"><col style="width:5.67%">'+
+            '<col style="width:5.67%"><col style="width:5.66%"><col style="width:5.67%">'+
+            '<col style="width:5.67%">'+
+          '</colgroup>'+
+          '<tr class="pfb-ban">'+
+            '<th class="pf-yellow pf-bold" colspan="2" style="font-size:9pt">Füllt Personalabteilung aus !!!!</th>'+
+            '<th class="pf-yellow pfb-y">MNS</th><th class="pf-yellow pfb-y">h-na</th><th class="pf-yellow pfb-y">h-na2</th>'+
+            '<th class="pf-yellow pfb-y">Me-h</th><th class="pf-yellow pfb-y">SF WV</th><th class="pf-yellow pfb-y">SF Di</th>'+
+            '<th class="pf-yellow pfb-y">Spes</th>'+
           '</tr>'+
-          '<tr>'+
-            '<td>KFZ-Kennz: <span class="dots"></span></td>'+
-            '<td>Bereitschaft: <span class="dots"></span></td>'+
+          '<tr class="pfb-r">'+
+            '<td class="pf-bold">Dienstfahrt mit Privat-Pkw</td>'+
+            '<td>Multistandort<span class="dots" style="min-width:26mm"></span></td>'+
             '<td></td><td></td><td></td><td></td><td></td><td></td><td></td>'+
           '</tr>'+
-          '<tr>'+
-            '<td>Fahrt-km: <span class="dots"></span></td>'+
-            '<td>Fahrgeld: <span class="dots"></span></td>'+
-            '<th>Sta</th><td></td><td></td><td></td><td></td>'+
-            '<th>Ber Di</th><th>Zulage</th>'+
+          '<tr class="pfb-r">'+
+            '<td>KFZ-Kennz: <span class="dots" style="min-width:18mm"></span></td>'+
+            '<td>Bereitschaft: <span class="dots" style="min-width:18mm"></span></td>'+
+            '<th class="pfb-s">Sta</th><td></td><td></td><td></td><td></td>'+
+            '<th class="pfb-s">Ber Di</th><th class="pfb-s">Zulage</th>'+
+          '</tr>'+
+          '<tr class="pfb-r">'+
+            '<td>Fahrt-km: <span class="dots" style="min-width:18mm"></span></td>'+
+            '<td>Fahrgeld: <span class="dots" style="min-width:22mm"></span></td>'+
+            '<td></td><td></td><td></td><td></td><td></td><td></td><td></td>'+
           '</tr>'+
         '</table>'+
       '</div>'+
