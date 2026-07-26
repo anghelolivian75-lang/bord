@@ -147,16 +147,20 @@
   #printForm{display:none}
   @media screen{ #printForm{display:none!important} }
   @media print{
-    /* iOS Safari ignora "size:A4 landscape" -> pagina ramane portrait si formularul
-       se taia pe 2 pagini. Solutia care merge peste tot: pagina A4 portrait, iar
-       formularul (285 x 201 mm) rotit 90 grade si centrat. Pe hartie iese identic. */
-    @page{size:A4 portrait;margin:0}
+    /* iOS Safari NU emite pagini landscape. Deci: o singura cutie de exact
+       210 x 297 mm (o pagina, overflow ascuns => imposibil sa apara pagina 2),
+       iar formularul de 285 x 201 mm e rotit 90 grade inauntru.
+       Pe hartie iese identic cu originalul A4 landscape. */
+    @page{size:210mm 297mm;margin:0}
     html,body{background:#fff!important;margin:0!important;padding:0!important;
-              width:210mm;height:297mm;overflow:hidden}
+              width:210mm!important;height:297mm!important;overflow:hidden!important}
     .wrap,.footer,.modal{display:none!important}
-    #printForm{display:block!important;position:absolute;top:0;left:0;
-               width:285mm;color:#000;font-family:Arial,Helvetica,sans-serif;
-               transform-origin:0 0;transform:translate(205.4mm,6mm) rotate(90deg)}
+    #printForm{display:block!important;position:relative;width:210mm;height:297mm;
+               overflow:hidden;page-break-after:avoid;break-after:avoid;
+               page-break-inside:avoid;break-inside:avoid}
+    .pf-page{position:absolute;top:0;left:0;width:285mm;color:#000;
+             font-family:Arial,Helvetica,sans-serif;
+             transform-origin:0 0;transform:translate(205.4mm,6mm) rotate(90deg)}
     #printForm *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;
                  box-sizing:border-box;text-transform:none!important;letter-spacing:normal!important;
                  color:#000!important;font-family:Arial,Helvetica,sans-serif!important}
@@ -1059,6 +1063,7 @@ function buildPrintForm(){
   const wk=isoWeek(mon);
 
   document.getElementById('printForm').innerHTML=
+    '<div class="pf-page">'+
     '<div class="pf-head">'+
       '<div class="pf-title">Reisekosten</div>'+
       '<div class="pf-daterange">Datum von <b>'+fmtDate(mon)+'</b> bis <b>'+fmtDate(sat)+'</b></div>'+
@@ -1135,6 +1140,7 @@ function buildPrintForm(){
           '</tr>'+
         '</table>'+
       '</div>'+
+    '</div>'+
     '</div>';
 }
 
