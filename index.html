@@ -147,12 +147,19 @@
   #printForm{display:none}
   @media screen{ #printForm{display:none!important} }
   @media print{
-    @page{size:A4 landscape;margin:4mm 5mm}
-    html,body{background:#fff!important;margin:0;padding:0}
+    /* iOS Safari ignora "size:A4 landscape" -> pagina ramane portrait si formularul
+       se taia pe 2 pagini. Solutia care merge peste tot: pagina A4 portrait, iar
+       formularul (285 x 201 mm) rotit 90 grade si centrat. Pe hartie iese identic. */
+    @page{size:A4 portrait;margin:0}
+    html,body{background:#fff!important;margin:0!important;padding:0!important;
+              width:210mm;height:297mm;overflow:hidden}
     .wrap,.footer,.modal{display:none!important}
-    #printForm{display:block!important;color:#000;font-family:Arial,Helvetica,sans-serif;width:100%}
+    #printForm{display:block!important;position:absolute;top:0;left:0;
+               width:285mm;color:#000;font-family:Arial,Helvetica,sans-serif;
+               transform-origin:0 0;transform:translate(205.4mm,6mm) rotate(90deg)}
     #printForm *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;
-                 box-sizing:border-box}
+                 box-sizing:border-box;text-transform:none!important;letter-spacing:normal!important;
+                 color:#000!important;font-family:Arial,Helvetica,sans-serif!important}
 
     /* ---- antet: 58.9pt inaltime ---- */
     .pf-head{position:relative;height:58.9pt;width:100%}
